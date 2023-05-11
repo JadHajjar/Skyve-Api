@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skyve-Api", "Api\Skyve-Api.csproj", "{D4F9B6ED-4C68-4C50-AD2A-19C4B041959D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Extensions.Sql", "..\Extensions\Extensions.Sql\Extensions.Sql.shproj", "{F37ECE4B-E1BB-4A75-97BA-FEF60F98CF96}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4F9B6ED-4C68-4C50-AD2A-19C4B041959D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F9B6ED-4C68-4C50-AD2A-19C4B041959D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F9B6ED-4C68-4C50-AD2A-19C4B041959D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F9B6ED-4C68-4C50-AD2A-19C4B041959D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5AB91DA-44FF-45FE-A97E-50E5858C7E0A}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\Extensions\Extensions.Sql\Extensions.Sql.projitems*{d4f9b6ed-4c68-4c50-ad2a-19c4b041959d}*SharedItemsImports = 5
+		..\Extensions\Extensions.Sql\Extensions.Sql.projitems*{f37ece4b-e1bb-4a75-97ba-fef60f98cf96}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

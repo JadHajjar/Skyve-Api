@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <DefineConstants>API</DefineConstants>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\ApiResponse.cs" Link="\Domain\ApiResponse.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\Author.cs" Link="\Domain\Author.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\CompatibilityData.cs" Link="\Domain\CompatibilityData.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\Package.cs" Link="\Domain\Package.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\NotificationType.cs" Link="\Domain\NotificationType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PackageStability.cs" Link="\Domain\PackageStability.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PostPackage.cs" Link="\Domain\PostPackage.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PackageUsage.cs" Link="\Domain\PackageUsage.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PackageLink.cs" Link="\Domain\PackageLink.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PackageStatus.cs" Link="\Domain\PackageStatus.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\PackageInteraction.cs" Link="\Domain\PackageInteraction.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\CRNAttribute.cs" Link="\Domain\CRNAttribute.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\IPackageStatus.cs" Link="\Domain\IPackageStatus.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\StatusType.cs" Link="\Domain\StatusType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\InteractionAction.cs" Link="\Domain\InteractionAction.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\InteractionType.cs" Link="\Domain\InteractionType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\LinkType.cs" Link="\Domain\LinkType.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+	</ItemGroup>
+	<Import Project="..\..\Extensions\Extensions.Sql\Extensions.Sql.projitems" Label="Shared" />
+</Project>
