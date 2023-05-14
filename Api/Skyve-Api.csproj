@@ -22,7 +22,7 @@
 		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\CRNAttribute.cs" Link="\Domain\CRNAttribute.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\IPackageStatus.cs" Link="\Domain\IPackageStatus.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\StatusType.cs" Link="\Domain\StatusType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\InteractionAction.cs" Link="\Domain\InteractionAction.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\StatusAction.cs" Link="\Domain\StatusAction.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\InteractionType.cs" Link="\Domain\InteractionType.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\LoadOrderToolTwo\Domain\Compatibility\LinkType.cs" Link="\Domain\LinkType.cs" />
 	</ItemGroup>
