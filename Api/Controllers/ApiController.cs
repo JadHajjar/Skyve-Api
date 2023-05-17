@@ -15,9 +15,14 @@ namespace ApiApplication.Controllers;
 public class ApiController : ControllerBase
 {
 	[HttpGet(nameof(IsCommunityManager))]
-	public bool IsCommunityManager(string steamId)
+	public bool IsCommunityManager()
 	{
-		return DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(steamId.ToString(), KEYS.SALT)) }) is not null;
+		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		{
+			return false;
+		}
+
+		return DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) }) is not null;
 	}
 
 	[HttpGet(nameof(Catalogue))]
@@ -113,6 +118,19 @@ public class ApiController : ControllerBase
 			return new() { Success = false, Message = "Package was empty" };
 		}
 
+		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		{
+			return new() { Success = false, Message = "Unauthorized" };
+		}
+
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+		var user = DynamicSql.SqlGetById(new Author { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+
+		if ((package.AuthorId.ToString() != userId.ToString() && manager is null) || (user?.Malicious ?? false))
+		{
+			return new() { Success = false, Message = "Unauthorized" };
+		}
+
 		using var transaction = SqlHandler.CreateTransaction();
 
 		try
@@ -130,6 +148,24 @@ public class ApiController : ControllerBase
 			}
 
 			package.SqlAdd(true, transaction);
+
+			if (package.BlackListId)
+			{
+				new BlackListId { SteamId = package.SteamId }.SqlAdd(tr: transaction);
+			}
+			else
+			{
+				new BlackListId { SteamId = package.SteamId }.SqlDeleteOne(tr: transaction);
+			}
+
+			if (package.BlackListName)
+			{
+				new BlackListName { Name = package.Name }.SqlAdd(tr: transaction);
+			}
+			else
+			{
+				new BlackListName { Name = package.Name }.SqlDeleteOne(tr: transaction);
+			}
 
 			new PackageStatus { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
 			new PackageInteraction { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
