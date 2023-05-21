@@ -2,9 +2,9 @@ using ApiApplication.Domain;
 
 using Extensions.Sql;
 
-using LoadOrderToolTwo.Domain.Compatibility;
-
 using Microsoft.AspNetCore.Mvc;
+
+using SkyveApp.Domain.Compatibility;
 
 using System.Data.SqlClient;
 
@@ -72,8 +72,8 @@ public class ApiController : ControllerBase
 		return data;
 	}
 
-	[HttpGet(nameof(Package))]
-	public CompatibilityData Package(ulong steamId)
+	[HttpGet("Package")]
+	public CompatibilityData GetPackage(ulong steamId)
 	{
 		var data = new CompatibilityData();
 
@@ -215,6 +215,103 @@ public class ApiController : ControllerBase
 		{
 			((SqlTransaction)transaction).Rollback();
 
+			return new() { Success = false, Message = ex.Message };
+		}
+	}
+
+	[HttpGet(nameof(Translations))]
+	public Dictionary<string, string?> Translations()
+	{
+		var notes = DynamicSql.SqlGet<Package>($"[{nameof(Package.Note)}] IS NOT NULL AND [{nameof(Package.Note)}] <> ''");
+		var interactions = DynamicSql.SqlGet<PackageInteraction>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
+		var statuses = DynamicSql.SqlGet<PackageStatus>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
+
+		var dictionary = new Dictionary<string, string?>();
+
+		foreach (var item in notes)
+		{
+			dictionary[item.Note!] = item.Note;
+			//dictionary[item.SteamId.ToString()] = item.Note;
+		}
+
+		foreach (var item in interactions)
+		{
+			dictionary[item.Note!] = item.Note;
+			//dictionary[$"Interaction_{item.PackageId}_{(int)item.Type}_{(int)item.Action}"] = item.Note;
+		}
+
+		foreach (var item in statuses)
+		{
+			dictionary[item.Note!] = item.Note;
+			//dictionary[$"Status_{item.PackageId}_{(int)item.Type}_{(int)item.Action}"] = item.Note;
+		}
+
+		return dictionary;
+	}
+
+	[HttpPost(nameof(RequestReview))]
+	public ApiResponse RequestReview([FromBody] ReviewRequest request)
+	{
+		try
+		{
+			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			request.UserId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+			request.Timestamp = DateTime.UtcNow;
+			request.SqlAdd(true);
+
+			return new() { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Success = false, Message = ex.Message };
+		}
+	}
+
+	[HttpGet(nameof(GetReviewRequests))]
+	public List<ReviewRequest> GetReviewRequests()
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		{
+			return new();
+		}
+
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+
+		if (manager is null)
+		{
+			return new();
+		}
+
+		return DynamicSql.SqlGet<ReviewRequest>();
+	}
+
+	[HttpPost(nameof(ProcessReviewRequest))]
+	public ApiResponse ProcessReviewRequest([FromBody] ReviewRequest request)
+	{
+		try
+		{
+			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+
+			if (manager is null)
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			request.SqlDeleteOne();
+
+			return new() { Success = true };
+		}
+		catch (Exception ex)
+		{
 			return new() { Success = false, Message = ex.Message };
 		}
 	}
