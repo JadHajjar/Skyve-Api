@@ -272,7 +272,7 @@ public class ApiController : ControllerBase
 	}
 
 	[HttpGet(nameof(GetReviewRequests))]
-	public List<ReviewRequest> GetReviewRequests()
+	public List<ReviewRequestNoLog> GetReviewRequests()
 	{
 		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
 		{
@@ -286,7 +286,25 @@ public class ApiController : ControllerBase
 			return new();
 		}
 
-		return DynamicSql.SqlGet<ReviewRequest>();
+		return DynamicSql.SqlGet<ReviewRequestNoLog>();
+	}
+
+	[HttpGet(nameof(GetReviewRequest))]
+	public ReviewRequest GetReviewRequest(ulong userId, ulong packageId)
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return new();
+		}
+
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT)) });
+
+		if (manager is null)
+		{
+			return new();
+		}
+
+		return new ReviewRequest { UserId = userId, PackageId = packageId }.SqlGetById();
 	}
 
 	[HttpPost(nameof(ProcessReviewRequest))]
