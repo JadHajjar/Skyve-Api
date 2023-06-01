@@ -8,25 +8,27 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\ApiResponse.cs" Link="\Domain\ApiResponse.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Author.cs" Link="\Domain\Author.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\ApiResponse.cs" Link="\Domain\ApiResponse.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\Author.cs" Link="\Domain\Author.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\CompatibilityData.cs" Link="\Domain\CompatibilityData.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Package.cs" Link="\Domain\Package.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\NotificationType.cs" Link="\Domain\NotificationType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageStability.cs" Link="\Domain\PackageStability.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PostPackage.cs" Link="\Domain\PostPackage.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageUsage.cs" Link="\Domain\PackageUsage.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageLink.cs" Link="\Domain\PackageLink.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageStatus.cs" Link="\Domain\PackageStatus.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageInteraction.cs" Link="\Domain\PackageInteraction.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\CrPackage.cs" Link="\Domain\CrPackage.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\NotificationType.cs" Link="\Domain\NotificationType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\PackageStability.cs" Link="\Domain\PackageStability.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\PostPackage.cs" Link="\Domain\PostPackage.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\PackageUsage.cs" Link="\Domain\PackageUsage.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\PackageLink.cs" Link="\Domain\PackageLink.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\PackageStatus.cs" Link="\Domain\PackageStatus.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\PackageInteraction.cs" Link="\Domain\PackageInteraction.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\CRNAttribute.cs" Link="\Domain\CRNAttribute.cs" />
 		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\IPackageStatus.cs" Link="\Domain\IPackageStatus.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\StatusType.cs" Link="\Domain\StatusType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\StatusAction.cs" Link="\Domain\StatusAction.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\InteractionType.cs" Link="\Domain\InteractionType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\LinkType.cs" Link="\Domain\LinkType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\PackageType.cs" Link="\Domain\PackageType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\ReviewRequest.cs" Link="\Domain\ReviewRequest.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\StatusType.cs" Link="\Domain\StatusType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\StatusAction.cs" Link="\Domain\StatusAction.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\InteractionType.cs" Link="\Domain\InteractionType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\LinkType.cs" Link="\Domain\LinkType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Enums\PackageType.cs" Link="\Domain\PackageType.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\ReviewRequest.cs" Link="\Domain\ReviewRequest.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\UserProfile.cs" Link="\Domain\UserProfile.cs" />
+		<Compile Include="..\..\LoadOrderMod-2\SkyveApp\Domain\Compatibility\Api\UserProfileContent.cs" Link="\Domain\UserProfileContent.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />

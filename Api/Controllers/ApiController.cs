@@ -5,6 +5,7 @@ using Extensions.Sql;
 using Microsoft.AspNetCore.Mvc;
 
 using SkyveApp.Domain.Compatibility;
+using SkyveApp.Domain.Compatibility.Api;
 
 using System.Data.SqlClient;
 
@@ -32,7 +33,7 @@ public class ApiController : ControllerBase
 
 		var blackListIds = DynamicSql.SqlGet<BlackListId>();
 		var blackListNames = DynamicSql.SqlGet<BlackListName>();
-		var packages = DynamicSql.SqlGet<Package>();
+		var packages = DynamicSql.SqlGet<CrPackage>();
 		var authors = DynamicSql.SqlGet<Author>();
 		var packageLinks = DynamicSql.SqlGet<PackageLink>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
 		var packageStatuses = DynamicSql.SqlGet<PackageStatus>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
@@ -83,7 +84,7 @@ public class ApiController : ControllerBase
 		data.BlackListedIds = new(blackListIds.Select(x => x.SteamId));
 		data.BlackListedNames = new(blackListNames.Select(x => x.Name!));
 
-		var package = new Package { SteamId = steamId }.SqlGetById();
+		var package = new CrPackage { SteamId = steamId }.SqlGetById();
 
 		if (package is null)
 		{
@@ -207,7 +208,7 @@ public class ApiController : ControllerBase
 				}
 			}
 
-			((SqlTransaction)transaction).Commit();
+			transaction.Commit();
 
 			return new() { Success = true, Message = "Success" };
 		}
@@ -222,7 +223,7 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(Translations))]
 	public Dictionary<string, string?> Translations()
 	{
-		var notes = DynamicSql.SqlGet<Package>($"[{nameof(Package.Note)}] IS NOT NULL AND [{nameof(Package.Note)}] <> ''");
+		var notes = DynamicSql.SqlGet<CrPackage>($"[{nameof(CrPackage.Note)}] IS NOT NULL AND [{nameof(CrPackage.Note)}] <> ''");
 		var interactions = DynamicSql.SqlGet<PackageInteraction>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
 		var statuses = DynamicSql.SqlGet<PackageStatus>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
 
@@ -325,6 +326,145 @@ public class ApiController : ControllerBase
 			}
 
 			request.SqlDeleteOne();
+
+			return new() { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Success = false, Message = ex.Message };
+		}
+	}
+
+	[HttpGet(nameof(GetUserProfiles))]
+	public List<UserProfile> GetUserProfiles(ulong userId)
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return new();
+		}
+
+		var onlyPublicProfiles = userId != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
+
+		var profiles = DynamicSql.SqlGet<UserProfile>(onlyPublicProfiles ? $"[{nameof(UserProfile.Public)}] = 1" : null);
+
+		return profiles;
+	}
+
+	[HttpDelete(nameof(DeleteUserProfile))]
+	public ApiResponse DeleteUserProfile(int profileId)
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return new() { Success = false, Message = "Unauthorized" };
+		}
+
+		try
+		{
+			var userIdVal = ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
+			var currentProfile = new UserProfile { ProfileId = profileId }.SqlGetById();
+
+			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			new UserProfile { ProfileId = profileId }.SqlDeleteOne();
+		}
+		catch (Exception ex)
+		{
+			return new() { Success = false, Message = ex.Message };
+		}
+
+		return new() { Success = true };
+	}
+
+	[HttpGet(nameof(GetUserProfileContents))]
+	public UserProfile? GetUserProfileContents(int profileId)
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return null;
+		}
+
+		var profile = new UserProfile { ProfileId = profileId }.SqlGetById();
+
+		if (profile == null || (!profile.Public && profile.AuthorId != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT))))
+		{
+			return null;
+		}
+
+		profile.Contents = new UserProfileContent { ProfileId = profileId }.SqlGetByIndex().ToArray();
+
+		return profile;
+	}
+
+	[HttpPost(nameof(SaveUserProfile))]
+	public ApiResponse SaveUserProfile([FromBody] UserProfile profile)
+	{
+		try
+		{
+			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
+
+			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			if (!(profile.Contents?.Any() ?? false))
+			{
+				return new() { Success = false, Message = "Nothing to save" };
+			}
+
+			using var transaction = SqlHandler.CreateTransaction();
+
+			profile.AuthorId = userIdVal;
+
+			new UserProfileContent { ProfileId = profile.ProfileId }.SqlDeleteByIndex(tr: transaction);
+
+			var newId = (int)profile.SqlAdd(true, tr: transaction);
+
+			foreach (var item in profile.Contents)
+			{
+				item.ProfileId = newId;
+
+				item.SqlAdd(false, tr: transaction);
+			}
+
+			transaction.Commit();
+
+			return new() { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Success = false, Message = ex.Message };
+		}
+	}
+
+	[HttpPost(nameof(UpdateUserProfile))]
+	public ApiResponse UpdateUserProfile([FromBody] UserProfile profile)
+	{
+		try
+		{
+			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
+
+			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
+			profile.SqlUpdate();
 
 			return new() { Success = true };
 		}
