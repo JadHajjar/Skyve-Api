@@ -208,6 +208,8 @@ public class ApiController : ControllerBase
 				}
 			}
 
+			new ReviewRequest { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			
 			transaction.Commit();
 
 			return new() { Success = true, Message = "Success" };
@@ -232,19 +234,16 @@ public class ApiController : ControllerBase
 		foreach (var item in notes)
 		{
 			dictionary[item.Note!] = item.Note;
-			//dictionary[item.SteamId.ToString()] = item.Note;
 		}
 
 		foreach (var item in interactions)
 		{
 			dictionary[item.Note!] = item.Note;
-			//dictionary[$"Interaction_{item.PackageId}_{(int)item.Type}_{(int)item.Action}"] = item.Note;
 		}
 
 		foreach (var item in statuses)
 		{
 			dictionary[item.Note!] = item.Note;
-			//dictionary[$"Status_{item.PackageId}_{(int)item.Type}_{(int)item.Action}"] = item.Note;
 		}
 
 		return dictionary;
