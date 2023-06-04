@@ -1,15 +1,16 @@
-using ApiApplication.Domain;
-
 using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
+
+using SkyveApi.Domain;
+using SkyveApi.Utilities;
 
 using SkyveApp.Domain.Compatibility;
 using SkyveApp.Domain.Compatibility.Api;
 
 using System.Data.SqlClient;
 
-namespace ApiApplication.Controllers;
+namespace SkyveApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -209,7 +210,7 @@ public class ApiController : ControllerBase
 			}
 
 			new ReviewRequest { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
-			
+
 			transaction.Commit();
 
 			return new() { Success = true, Message = "Success" };
@@ -423,10 +424,19 @@ public class ApiController : ControllerBase
 			using var transaction = SqlHandler.CreateTransaction();
 
 			profile.AuthorId = userIdVal;
+			profile.DateUpdated = DateTime.UtcNow;
+			profile.ModCount = profile.Contents.Count(x => x.IsMod);
+			profile.AssetCount = profile.Contents.Length - profile.ModCount;
+			profile.Banner ??= Array.Empty<byte>();
+
+			if (profile.ProfileId == 0)
+			{
+				profile.DateCreated = DateTime.UtcNow;
+			}
 
 			new UserProfileContent { ProfileId = profile.ProfileId }.SqlDeleteByIndex(tr: transaction);
 
-			var newId = (int)profile.SqlAdd(true, tr: transaction);
+			var newId = (int)(decimal)profile.SqlAdd(true, tr: transaction);
 
 			foreach (var item in profile.Contents)
 			{

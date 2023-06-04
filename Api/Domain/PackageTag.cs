@@ -1,6 +1,6 @@
 ﻿using Extensions.Sql;
 
-namespace ApiApplication.Domain;
+namespace SkyveApi.Domain;
 
 [DynamicSqlClass("PackageTags")]
 public class PackageTag : IDynamicSql
