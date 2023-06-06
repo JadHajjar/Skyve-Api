@@ -345,7 +345,20 @@ public class ApiController : ControllerBase
 
 		var onlyPublicProfiles = userId != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
 
-		var profiles = DynamicSql.SqlGet<UserProfile>(onlyPublicProfiles ? $"[{nameof(UserProfile.Public)}] = 1" : null);
+		var profiles = new UserProfile { Author = userId }.SqlGetByIndex(onlyPublicProfiles ? $"[{nameof(UserProfile.Public)}] = 1" : null);
+
+		return profiles;
+	}
+
+	[HttpGet(nameof(GetPublicProfiles))]
+	public List<UserProfile> GetPublicProfiles()
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return new();
+		}
+
+		var profiles = DynamicSql.SqlGet<UserProfile>($"[{nameof(UserProfile.Public)}] = 1");
 
 		return profiles;
 	}
@@ -363,7 +376,7 @@ public class ApiController : ControllerBase
 			var userIdVal = ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
 			var currentProfile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
-			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			if (currentProfile != null && currentProfile.Author != userIdVal)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
@@ -388,10 +401,14 @@ public class ApiController : ControllerBase
 
 		var profile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
-		if (profile == null || (!profile.Public && profile.AuthorId != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT))))
+		if (profile == null || (!profile.Public && profile.Author != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT))))
 		{
 			return null;
 		}
+
+		profile.Downloads++;
+
+		profile.SqlUpdate();
 
 		profile.Contents = new UserProfileContent { ProfileId = profileId }.SqlGetByIndex().ToArray();
 
@@ -411,7 +428,7 @@ public class ApiController : ControllerBase
 			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
 			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
 
-			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			if (currentProfile != null && currentProfile.Author != userIdVal)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
@@ -423,7 +440,7 @@ public class ApiController : ControllerBase
 
 			using var transaction = SqlHandler.CreateTransaction();
 
-			profile.AuthorId = userIdVal;
+			profile.Author = userIdVal;
 			profile.DateUpdated = DateTime.UtcNow;
 			profile.ModCount = profile.Contents.Count(x => x.IsMod);
 			profile.AssetCount = profile.Contents.Length - profile.ModCount;
@@ -468,7 +485,7 @@ public class ApiController : ControllerBase
 			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
 			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
 
-			if (currentProfile != null && currentProfile.AuthorId != userIdVal)
+			if (currentProfile != null && currentProfile.Author != userIdVal)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
