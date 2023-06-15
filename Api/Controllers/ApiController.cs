@@ -8,6 +8,7 @@ using SkyveApi.Utilities;
 using SkyveApp.Domain.Compatibility;
 using SkyveApp.Domain.Compatibility.Api;
 
+using System.Data;
 using System.Data.SqlClient;
 
 namespace SkyveApi.Controllers;
@@ -415,6 +416,38 @@ public class ApiController : ControllerBase
 		return profile;
 	}
 
+	[HttpGet(nameof(GetUserProfileByLink))]
+	public UserProfile? GetUserProfileByLink(string link)
+	{
+		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		{
+			return null;
+		}
+
+		int profileId;
+
+		try
+		{
+			profileId = IdHasher.ShortStringToHash(link);
+		}
+		catch { return null; }
+
+		var profile = new UserProfile { ProfileId = profileId }.SqlGetById();
+
+		if (profile == null)
+		{
+			return null;
+		}
+
+		profile.Downloads++;
+
+		profile.SqlUpdate();
+
+		profile.Contents = new UserProfileContent { ProfileId = profileId }.SqlGetByIndex().ToArray();
+
+		return profile;
+	}
+
 	[HttpPost(nameof(SaveUserProfile))]
 	public ApiResponse SaveUserProfile([FromBody] UserProfile profile)
 	{
@@ -426,6 +459,12 @@ public class ApiController : ControllerBase
 			}
 
 			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+
+			if (userIdVal == 0)
+			{
+				return new() { Success = false, Message = "Unauthorized" };
+			}
+
 			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
 
 			if (currentProfile != null && currentProfile.Author != userIdVal)
@@ -446,25 +485,46 @@ public class ApiController : ControllerBase
 			profile.AssetCount = profile.Contents.Length - profile.ModCount;
 			profile.Banner ??= Array.Empty<byte>();
 
-			if (profile.ProfileId == 0)
+			if (currentProfile is null)
 			{
+				profile.ProfileId = 0;
 				profile.DateCreated = DateTime.UtcNow;
 			}
+			else
+			{
+				profile.Downloads = currentProfile.Downloads;
+				profile.DateCreated = currentProfile.DateCreated;
+				profile.Public = currentProfile.Public;
+			}
 
-			new UserProfileContent { ProfileId = profile.ProfileId }.SqlDeleteByIndex(tr: transaction);
+			if (profile.ProfileId == 0)
+			{
+				var currentProfiles = (int)SqlHelper.ExecuteScalar((SqlTransaction)transaction, CommandType.Text, $"SELECT COUNT(*) FROM [UserProfiles] WHERE [AuthorId] = {profile.Author}");
 
-			var newId = (int)(decimal)profile.SqlAdd(true, tr: transaction);
+				if (currentProfiles >= 5)
+				{
+					return new() { Success = false, Message = "Limit Exceeded" };
+				}
+
+				profile.ProfileId = (int)(decimal)profile.SqlAdd(false, tr: transaction);
+			}
+			else
+			{
+				profile.SqlUpdate(tr: transaction);
+
+				new UserProfileContent { ProfileId = profile.ProfileId }.SqlDeleteByIndex(tr: transaction);
+			}
 
 			foreach (var item in profile.Contents)
 			{
-				item.ProfileId = newId;
+				item.ProfileId = profile.ProfileId;
 
 				item.SqlAdd(false, tr: transaction);
 			}
 
 			transaction.Commit();
 
-			return new() { Success = true };
+			return new() { Success = true, Data = profile.ProfileId };
 		}
 		catch (Exception ex)
 		{
@@ -472,8 +532,8 @@ public class ApiController : ControllerBase
 		}
 	}
 
-	[HttpPost(nameof(UpdateUserProfile))]
-	public ApiResponse UpdateUserProfile([FromBody] UserProfile profile)
+	[HttpPost(nameof(SetProfileVisibility))]
+	public ApiResponse SetProfileVisibility(int profileId, [FromBody] bool visible)
 	{
 		try
 		{
@@ -483,14 +543,15 @@ public class ApiController : ControllerBase
 			}
 
 			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
-			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
+			var currentProfile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
-			if (currentProfile != null && currentProfile.Author != userIdVal)
+			if (currentProfile == null || currentProfile.Author != userIdVal)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
 
-			profile.SqlUpdate();
+			currentProfile.Public = visible;
+			currentProfile.SqlUpdate();
 
 			return new() { Success = true };
 		}
