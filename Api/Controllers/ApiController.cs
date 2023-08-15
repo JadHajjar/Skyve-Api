@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using SkyveApi.Domain;
 using SkyveApi.Utilities;
 
-using SkyveApp.Domain.Compatibility;
-using SkyveApp.Domain.Compatibility.Api;
+using SkyveApp.Domain.CS1.Steam;
+using SkyveApp.Systems.Compatibility.Domain;
+using SkyveApp.Systems.Compatibility.Domain.Api;
+using SkyveApp.Systems.CS1.Utilities;
 
 using System.Data;
 using System.Data.SqlClient;
@@ -17,15 +19,35 @@ namespace SkyveApi.Controllers;
 [Route("[controller]")]
 public class ApiController : ControllerBase
 {
+	private bool TryGetSteamId(out ulong steamId)
+	{
+		if (Request.Headers.TryGetValue("USER_ID", out var userId) && !string.IsNullOrEmpty(userId.ToString()))
+		{
+			try
+			{
+				var id = Encryption.Decrypt(userId.ToString(), KEYS.SALT);
+
+				if (ulong.TryParse(id, out steamId))
+				{
+					return true;
+				}
+			}
+			catch { }
+		}
+
+		steamId = 0;
+		return false;
+	}
+
 	[HttpGet(nameof(IsCommunityManager))]
 	public bool IsCommunityManager()
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		if (!TryGetSteamId(out var userId))
 		{
 			return false;
 		}
 
-		return DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) }) is not null;
+		return DynamicSql.SqlGetById(new Manager { SteamId = userId }) is not null;
 	}
 
 	[HttpGet(nameof(Catalogue))]
@@ -35,7 +57,7 @@ public class ApiController : ControllerBase
 
 		var blackListIds = DynamicSql.SqlGet<BlackListId>();
 		var blackListNames = DynamicSql.SqlGet<BlackListName>();
-		var packages = DynamicSql.SqlGet<CrPackage>();
+		var packages = DynamicSql.SqlGet<CompatibilityPackageData>();
 		var authors = DynamicSql.SqlGet<Author>();
 		var packageLinks = DynamicSql.SqlGet<PackageLink>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
 		var packageStatuses = DynamicSql.SqlGet<PackageStatus>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
@@ -86,7 +108,7 @@ public class ApiController : ControllerBase
 		data.BlackListedIds = new(blackListIds.Select(x => x.SteamId));
 		data.BlackListedNames = new(blackListNames.Select(x => x.Name!));
 
-		var package = new CrPackage { SteamId = steamId }.SqlGetById();
+		var package = new CompatibilityPackageData { SteamId = steamId }.SqlGetById();
 
 		if (package is null)
 		{
@@ -121,13 +143,13 @@ public class ApiController : ControllerBase
 			return new() { Success = false, Message = "Package was empty" };
 		}
 
-		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		if (!TryGetSteamId(out var userId))
 		{
 			return new() { Success = false, Message = "Unauthorized" };
 		}
 
-		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
-		var user = DynamicSql.SqlGetById(new Author { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = userId });
+		var user = DynamicSql.SqlGetById(new Author { SteamId = userId });
 
 		if ((package.AuthorId.ToString() != userId.ToString() && manager is null) || (user?.Malicious ?? false))
 		{
@@ -227,7 +249,7 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(Translations))]
 	public Dictionary<string, string?> Translations()
 	{
-		var notes = DynamicSql.SqlGet<CrPackage>($"[{nameof(CrPackage.Note)}] IS NOT NULL AND [{nameof(CrPackage.Note)}] <> ''");
+		var notes = DynamicSql.SqlGet<CompatibilityPackageData>($"[{nameof(CompatibilityPackageData.Note)}] IS NOT NULL AND [{nameof(CompatibilityPackageData.Note)}] <> ''");
 		var interactions = DynamicSql.SqlGet<PackageInteraction>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
 		var statuses = DynamicSql.SqlGet<PackageStatus>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
 
@@ -256,12 +278,12 @@ public class ApiController : ControllerBase
 	{
 		try
 		{
-			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			if (!TryGetSteamId(out var userId))
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
 
-			request.UserId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+			request.UserId = userId;
 			request.Timestamp = DateTime.UtcNow;
 			request.SqlAdd(true);
 
@@ -276,12 +298,12 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetReviewRequests))]
 	public List<ReviewRequestNoLog> GetReviewRequests()
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+		if (!TryGetSteamId(out var userId))
 		{
 			return new();
 		}
 
-		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = userId });
 
 		if (manager is null)
 		{
@@ -294,12 +316,12 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetReviewRequest))]
 	public ReviewRequest GetReviewRequest(ulong userId, ulong packageId)
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		if (!TryGetSteamId(out var senderId))
 		{
 			return new();
 		}
 
-		var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT)) });
+		var manager = DynamicSql.SqlGetById(new Manager { SteamId = senderId });
 
 		if (manager is null)
 		{
@@ -314,12 +336,12 @@ public class ApiController : ControllerBase
 	{
 		try
 		{
-			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			if (!TryGetSteamId(out var userId))
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
 
-			var manager = DynamicSql.SqlGetById(new Manager { SteamId = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT)) });
+			var manager = DynamicSql.SqlGetById(new Manager { SteamId = userId });
 
 			if (manager is null)
 			{
@@ -339,12 +361,12 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetUserProfiles))]
 	public List<UserProfile> GetUserProfiles(ulong userId)
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		if (!TryGetSteamId(out var senderId))
 		{
 			return new();
 		}
 
-		var onlyPublicProfiles = userId != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
+		var onlyPublicProfiles = userId != senderId;
 
 		var profiles = new UserProfile { Author = userId }.SqlGetByIndex(onlyPublicProfiles ? $"[{nameof(UserProfile.Public)}] = 1" : null);
 
@@ -453,21 +475,14 @@ public class ApiController : ControllerBase
 	{
 		try
 		{
-			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
-			{
-				return new() { Success = false, Message = "Unauthorized" };
-			}
-
-			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
-
-			if (userIdVal == 0)
+			if (!TryGetSteamId(out var userId) || userId == 0)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
 
 			var currentProfile = new UserProfile { ProfileId = profile.ProfileId }.SqlGetById();
 
-			if (currentProfile != null && currentProfile.Author != userIdVal)
+			if (currentProfile != null && currentProfile.Author != userId)
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
@@ -479,7 +494,7 @@ public class ApiController : ControllerBase
 
 			using var transaction = SqlHandler.CreateTransaction();
 
-			profile.Author = userIdVal;
+			profile.Author = userId;
 			profile.DateUpdated = DateTime.UtcNow;
 			profile.ModCount = profile.Contents.Count(x => x.IsMod);
 			profile.AssetCount = profile.Contents.Length - profile.ModCount;
@@ -542,7 +557,7 @@ public class ApiController : ControllerBase
 				return new() { Success = false, Message = "Unauthorized" };
 			}
 
-			var userIdVal = ulong.Parse(Encryption.Decrypt(userId.ToString(), KEYS.SALT));
+			var userIdVal = userId;
 			var currentProfile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
 			if (currentProfile == null || currentProfile.Author != userIdVal)
@@ -559,5 +574,11 @@ public class ApiController : ControllerBase
 		{
 			return new() { Success = false, Message = ex.Message };
 		}
+	}
+
+	[HttpGet(nameof(GetUsers))]
+	public async Task<List<SteamUser>> GetUsers(string userIds)
+	{
+		return await SteamUtil.GetUsersAsync(userIds);
 	}
 }
