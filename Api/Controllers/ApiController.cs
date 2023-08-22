@@ -2,12 +2,13 @@ using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
 
+using Skyve.Domain.CS1.Steam;
+using Skyve.Systems.Compatibility.Domain;
+using Skyve.Systems.Compatibility.Domain.Api;
+
 using SkyveApi.Domain;
 using SkyveApi.Utilities;
 
-using SkyveApp.Domain.CS1.Steam;
-using SkyveApp.Systems.Compatibility.Domain;
-using SkyveApp.Systems.Compatibility.Domain.Api;
 using SkyveApp.Systems.CS1.Utilities;
 
 using System.Data;
@@ -576,8 +577,8 @@ public class ApiController : ControllerBase
 		}
 	}
 
-	[HttpGet(nameof(GetUsers))]
-	public async Task<List<SteamUser>> GetUsers(string userIds)
+	[HttpPost(nameof(GetUsers))]
+	public async Task<List<SteamUser>> GetUsers([FromBody] List<ulong> userIds)
 	{
 		return await SteamUtil.GetUsersAsync(userIds);
 	}

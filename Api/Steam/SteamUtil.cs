@@ -1,14 +1,11 @@
 using Extensions.Sql;
 
+using Skyve.Domain.CS1.Steam;
+using Skyve.Systems.Compatibility.Domain.Api;
+
 using SkyveApi;
 
-using SkyveApp.Domain.CS1.Steam;
-using SkyveApp.Systems.Compatibility.Domain.Api;
-
-using System;
-using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SkyveApp.Systems.CS1.Utilities;
 
@@ -35,7 +32,12 @@ public static class SteamUtil
 
 		if (idsToUpdate.Count > 0)
 		{
-			var remainingUsers = await GetSteamUsersAsync(idsToUpdate);
+			var remainingUsers = new List<SteamUser>();
+
+			foreach (var chunk in idsToUpdate.Chunk(50))
+			{
+				remainingUsers.AddRange(await GetSteamUsersAsync(chunk));
+			}
 
 			foreach (var item in remainingUsers)
 			{
@@ -44,16 +46,11 @@ public static class SteamUtil
 		}
 	}
 
-	public static async Task<List<SteamUser>> GetUsersAsync(string idString)
+	public static async Task<List<SteamUser>> GetUsersAsync(List<ulong> ids)
 	{
-		if (string.IsNullOrWhiteSpace(idString))
-		{
-			return new();
-		}
+		ids?.RemoveAll(x => x == 0);
 
-		var ids = idString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ulong.Parse).ToList();
-
-		if (ids.Count == 0)
+		if (!(ids?.Any() ?? false))
 		{
 			return new();
 		}
@@ -74,7 +71,12 @@ public static class SteamUtil
 
 		if (ids.Count > 0)
 		{
-			var remainingUsers = await GetSteamUsersAsync(ids);
+			var remainingUsers = new List<SteamUser>();
+
+			foreach (var chunk in ids.Chunk(50))
+			{
+				remainingUsers.AddRange(await GetSteamUsersAsync(chunk));
+			}
 
 			foreach (var item in remainingUsers)
 			{
@@ -84,16 +86,14 @@ public static class SteamUtil
 			}
 		}
 
-		_idsToUpdate.AddRange(results.Where(x => x.Timestamp < DateTime.Now.AddDays(-7)).Select(x => x.SteamId));
+		_idsToUpdate.AddRange(results.Where(x => x.Timestamp < DateTime.Now.AddDays(-6)).Select(x => x.SteamId));
 
 		return results;
 	}
 
-	public static async Task<List<SteamUser>> GetSteamUsersAsync(List<ulong> steamId64s)
+	public static async Task<List<SteamUser>> GetSteamUsersAsync(ulong[] steamId64s)
 	{
-		steamId64s.RemoveAll(x => x == 0);
-
-		if (steamId64s.Count == 0)
+		if (steamId64s.Length == 0)
 		{
 			return new();
 		}

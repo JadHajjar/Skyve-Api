@@ -8,30 +8,30 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\ApiResponse.cs" Link="\Domain\ApiResponse.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\Author.cs" Link="\Domain\Author.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\CompatibilityData.cs" Link="\Domain\CompatibilityData.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\CompatibilityPackageData.cs" Link="\Domain\CompatibilityPackageData.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\NotificationType.cs" Link="\Domain\NotificationType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\PackageStability.cs" Link="\Domain\PackageStability.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\PostPackage.cs" Link="\Domain\PostPackage.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\PackageUsage.cs" Link="\Domain\PackageUsage.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\PackageLink.cs" Link="\Domain\PackageLink.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\PackageStatus.cs" Link="\Domain\PackageStatus.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\PackageInteraction.cs" Link="\Domain\PackageInteraction.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\CRNAttribute.cs" Link="\Domain\CRNAttribute.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\IPackageStatus.cs" Link="\Domain\IPackageStatus.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\IGenericPackageStatus.cs" Link="\Domain\IGenericPackageStatus.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\StatusType.cs" Link="\Domain\StatusType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\StatusAction.cs" Link="\Domain\StatusAction.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\InteractionType.cs" Link="\Domain\InteractionType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\LinkType.cs" Link="\Domain\LinkType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain\Enums\PackageType.cs" Link="\Domain\PackageType.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\ReviewRequest.cs" Link="\Domain\ReviewRequest.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\UserProfile.cs" Link="\Domain\UserProfile.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Systems\Compatibility\Domain\Api\UserProfileContent.cs" Link="\Domain\UserProfileContent.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain.CS1\Steam\SteamUser.cs" Link="\Steam\SteamUser.cs" />
-		<Compile Include="..\..\LoadOrderMod-2\SkyveApp.Domain.CS1\Steam\SteamUserResponse.cs" Link="\Steam\SteamUserResponse.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\ApiResponse.cs" Link="\Domain\ApiResponse.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\Author.cs" Link="\Domain\Author.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\CompatibilityData.cs" Link="\Domain\CompatibilityData.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\CompatibilityPackageData.cs" Link="\Domain\CompatibilityPackageData.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\NotificationType.cs" Link="\Domain\NotificationType.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\PackageStability.cs" Link="\Domain\PackageStability.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\PostPackage.cs" Link="\Domain\PostPackage.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\PackageUsage.cs" Link="\Domain\PackageUsage.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\PackageLink.cs" Link="\Domain\PackageLink.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\PackageStatus.cs" Link="\Domain\PackageStatus.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\PackageInteraction.cs" Link="\Domain\PackageInteraction.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\CRNAttribute.cs" Link="\Domain\CRNAttribute.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\IPackageStatus.cs" Link="\Domain\IPackageStatus.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\IGenericPackageStatus.cs" Link="\Domain\IGenericPackageStatus.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\StatusType.cs" Link="\Domain\StatusType.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\StatusAction.cs" Link="\Domain\StatusAction.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\InteractionType.cs" Link="\Domain\InteractionType.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\LinkType.cs" Link="\Domain\LinkType.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Domain\Enums\PackageType.cs" Link="\Domain\PackageType.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\ReviewRequest.cs" Link="\Domain\ReviewRequest.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\UserProfile.cs" Link="\Domain\UserProfile.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Systems\Compatibility\Domain\Api\UserProfileContent.cs" Link="\Domain\UserProfileContent.cs" />
+		<Compile Include="..\..\Skyve-CS1\Skyve.Domain.CS1\Steam\SteamUser.cs" Link="\Steam\SteamUser.cs" />
+		<Compile Include="..\..\Skyve-CS1\Skyve.Domain.CS1\Steam\SteamUserResponse.cs" Link="\Steam\SteamUserResponse.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
