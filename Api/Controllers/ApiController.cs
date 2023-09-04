@@ -362,10 +362,7 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetUserProfiles))]
 	public List<UserProfile> GetUserProfiles(ulong userId)
 	{
-		if (!TryGetSteamId(out var senderId))
-		{
-			return new();
-		}
+		TryGetSteamId(out var senderId);
 
 		var onlyPublicProfiles = userId != senderId;
 
@@ -377,11 +374,6 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetPublicProfiles))]
 	public List<UserProfile> GetPublicProfiles()
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
-		{
-			return new();
-		}
-
 		var profiles = DynamicSql.SqlGet<UserProfile>($"[{nameof(UserProfile.Public)}] = 1");
 
 		return profiles;
@@ -390,14 +382,13 @@ public class ApiController : ControllerBase
 	[HttpDelete(nameof(DeleteUserProfile))]
 	public ApiResponse DeleteUserProfile(int profileId)
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
+		if (!TryGetSteamId(out var userIdVal))
 		{
 			return new() { Success = false, Message = "Unauthorized" };
 		}
 
 		try
 		{
-			var userIdVal = ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT));
 			var currentProfile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
 			if (currentProfile != null && currentProfile.Author != userIdVal)
@@ -418,14 +409,11 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetUserProfileContents))]
 	public UserProfile? GetUserProfileContents(int profileId)
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
-		{
-			return null;
-		}
+		TryGetSteamId(out var senderId);
 
 		var profile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
-		if (profile == null || (!profile.Public && profile.Author != ulong.Parse(Encryption.Decrypt(senderId.ToString(), KEYS.SALT))))
+		if (profile == null || (!profile.Public && profile.Author != senderId))
 		{
 			return null;
 		}
@@ -442,11 +430,6 @@ public class ApiController : ControllerBase
 	[HttpGet(nameof(GetUserProfileByLink))]
 	public UserProfile? GetUserProfileByLink(string link)
 	{
-		if (!Request.Headers.TryGetValue("USER_ID", out var senderId))
-		{
-			return null;
-		}
-
 		int profileId;
 
 		try
@@ -553,7 +536,7 @@ public class ApiController : ControllerBase
 	{
 		try
 		{
-			if (!Request.Headers.TryGetValue("USER_ID", out var userId))
+			if (!TryGetSteamId(out var userId))
 			{
 				return new() { Success = false, Message = "Unauthorized" };
 			}
