@@ -2,14 +2,9 @@ using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Skyve.Domain.CS1.Steam;
-using Skyve.Systems.Compatibility.Domain;
-using Skyve.Systems.Compatibility.Domain.Api;
-
-using SkyveApi.Domain;
+using SkyveApi.Domain.CS2;
+using SkyveApi.Domain.Generic;
 using SkyveApi.Utilities;
-
-using SkyveApp.Systems.CS1.Utilities;
 
 using System.Data;
 using System.Data.SqlClient;
@@ -17,8 +12,9 @@ using System.Data.SqlClient;
 namespace SkyveApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class ApiController : ControllerBase
+[Route("api")]
+[Route("v1/api")]
+public class CS1ApiController : ControllerBase
 {
 	private bool TryGetSteamId(out ulong steamId)
 	{
@@ -67,7 +63,7 @@ public class ApiController : ControllerBase
 
 		for (var i = 0; i < packages.Count; i++)
 		{
-			var id = packages[i].SteamId;
+			var id = packages[i].Id;
 
 			if (packageLinks.ContainsKey(id))
 			{
@@ -109,17 +105,17 @@ public class ApiController : ControllerBase
 		data.BlackListedIds = new(blackListIds.Select(x => x.SteamId));
 		data.BlackListedNames = new(blackListNames.Select(x => x.Name!));
 
-		var package = new CompatibilityPackageData { SteamId = steamId }.SqlGetById();
+		var package = new CompatibilityPackageData { Id = steamId }.SqlGetById();
 
 		if (package is null)
 		{
-			data.Packages = new();
-			data.Authors = new();
+			data.Packages = [];
+			data.Authors = [];
 
 			return data;
 		}
 
-		var author = new Author { SteamId = package.SteamId }.SqlGetById();
+		var author = new Author { SteamId = package.Id }.SqlGetById();
 		var packageLinks = new PackageLink { PackageId = steamId }.SqlGetByIndex();
 		var packageStatuses = new PackageStatus { PackageId = steamId }.SqlGetByIndex();
 		var packageInteractions = new PackageInteraction { PackageId = steamId }.SqlGetByIndex();
@@ -130,8 +126,8 @@ public class ApiController : ControllerBase
 		package.Interactions = packageInteractions;
 		package.Tags = packageTags.Select(x => x.Tag!).ToList();
 
-		data.Packages = new() { package };
-		data.Authors = new() { author };
+		data.Packages = [package];
+		data.Authors = [author];
 
 		return data;
 	}
@@ -177,11 +173,11 @@ public class ApiController : ControllerBase
 
 			if (package.BlackListId)
 			{
-				new BlackListId { SteamId = package.SteamId }.SqlAdd(tr: transaction);
+				new BlackListId { SteamId = package.Id }.SqlAdd(tr: transaction);
 			}
 			else
 			{
-				new BlackListId { SteamId = package.SteamId }.SqlDeleteOne(tr: transaction);
+				new BlackListId { SteamId = package.Id }.SqlDeleteOne(tr: transaction);
 			}
 
 			if (package.BlackListName)
@@ -193,16 +189,16 @@ public class ApiController : ControllerBase
 				new BlackListName { Name = package.Name }.SqlDeleteOne(tr: transaction);
 			}
 
-			new PackageStatus { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
-			new PackageInteraction { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
-			new PackageTag { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
-			new PackageLink { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			new PackageStatus { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			new PackageInteraction { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			new PackageTag { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			new PackageLink { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
 
 			if (package.Statuses is not null)
 			{
 				foreach (var item in package.Statuses)
 				{
-					item.PackageId = package.SteamId;
+					item.PackageId = package.Id;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -211,7 +207,7 @@ public class ApiController : ControllerBase
 			{
 				foreach (var item in package.Interactions)
 				{
-					item.PackageId = package.SteamId;
+					item.PackageId = package.Id;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -220,7 +216,7 @@ public class ApiController : ControllerBase
 			{
 				foreach (var item in package.Links)
 				{
-					item.PackageId = package.SteamId;
+					item.PackageId = package.Id;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -229,11 +225,11 @@ public class ApiController : ControllerBase
 			{
 				foreach (var item in package.Tags)
 				{
-					new PackageTag { PackageId = package.SteamId, Tag = item }.SqlAdd(true, transaction);
+					new PackageTag { PackageId = package.Id, Tag = item }.SqlAdd(true, transaction);
 				}
 			}
 
-			new ReviewRequest { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			new ReviewRequest { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
 
 			transaction.Commit();
 
@@ -301,14 +297,14 @@ public class ApiController : ControllerBase
 	{
 		if (!TryGetSteamId(out var userId))
 		{
-			return new();
+			return [];
 		}
 
 		var manager = DynamicSql.SqlGetById(new Manager { SteamId = userId });
 
 		if (manager is null)
 		{
-			return new();
+			return [];
 		}
 
 		return DynamicSql.SqlGet<ReviewRequestNoLog>();
@@ -436,7 +432,10 @@ public class ApiController : ControllerBase
 		{
 			profileId = IdHasher.ShortStringToHash(link);
 		}
-		catch { return null; }
+		catch
+		{
+			return null;
+		}
 
 		var profile = new UserProfile { ProfileId = profileId }.SqlGetById();
 
@@ -564,5 +563,20 @@ public class ApiController : ControllerBase
 	public async Task<List<SteamUser>> GetUsers([FromBody] List<ulong> userIds)
 	{
 		return await SteamUtil.GetUsersAsync(userIds);
+	}
+
+	[HttpGet("GetEntry")]
+	public AuthEntry? Get(string id)
+	{
+		try
+		{
+			var guid = Guid.Parse(Encryption.Decrypt(id, KEYS.SALT));
+
+			return new AuthEntry { Guid = guid }.SqlGetById();
+		}
+		catch
+		{
+			return null;
+		}
 	}
 }

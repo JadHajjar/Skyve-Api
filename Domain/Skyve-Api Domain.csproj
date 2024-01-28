@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build">
+	<Import Project="../../Skyve/Config.props" />
+	<Import Project="..\..\Extensions\Extensions.Sql\Extensions.Sql.projitems" Label="Shared" />
+	
+	<PropertyGroup>
+		<TargetFramework Condition="'$(GameVersion)' != 'API'">net4.7.2</TargetFramework>
+		<TargetFramework Condition="'$(GameVersion)' == 'API'">net6.0</TargetFramework>
+		<RootNamespace>SkyveApi.Domain</RootNamespace>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\..\Skyve\Skyve.Compatibility\Skyve.Compatibility.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(GameVersion)' == 'CS2'">
+		<Compile Remove="CS1\**" />
+		<None Include="CS1\**" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(GameVersion)' == 'CS1'">
+		<Compile Remove="CS2\**" />
+		<None Include="CS2\**" />
+	</ItemGroup>
+</Project>
