@@ -19,7 +19,7 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty]
 	public string? FileName { get; set; }
 	[DynamicSqlProperty]
-	public ulong AuthorId { get; set; }
+	public string? AuthorId { get; set; }
 	[DynamicSqlProperty]
 	public string? Note { get; set; }
 	[DynamicSqlProperty]
