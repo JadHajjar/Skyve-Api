@@ -6,7 +6,7 @@ namespace SkyveApi.Domain.CS2;
 public class Author : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]
-	public string Id { get; set; }
+	public string? Id { get; set; }
 	[DynamicSqlProperty]
 	public string? Name { get; set; }
 	[DynamicSqlProperty]

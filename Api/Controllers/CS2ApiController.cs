@@ -2,7 +2,7 @@ using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
 
-using SkyveApi.Domain.CS1;
+using SkyveApi.Domain.CS2;
 using SkyveApi.Domain.Generic;
 using SkyveApi.Utilities;
 
