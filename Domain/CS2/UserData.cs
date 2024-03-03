@@ -2,8 +2,8 @@
 
 namespace SkyveApi.Domain.CS2;
 
-[DynamicSqlClass("Authors")]
-public class Author : IDynamicSql
+[DynamicSqlClass("CS2_Users")]
+public class UserData : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]
 	public string? Id { get; set; }
@@ -15,4 +15,6 @@ public class Author : IDynamicSql
 	public bool Verified { get; set; }
 	[DynamicSqlProperty]
 	public bool Malicious { get; set; }
+	[DynamicSqlProperty]
+	public bool Manager { get; set; }
 }

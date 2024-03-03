@@ -4,7 +4,7 @@ using System;
 
 namespace SkyveApi.Domain.CS2;
 
-[DynamicSqlClass("UserProfiles")]
+[DynamicSqlClass("CS2_UserProfiles")]
 public class UserProfile : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true, Identity = true)]

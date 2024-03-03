@@ -1,10 +1,10 @@
 ﻿using Extensions.Sql;
 
-namespace SkyveApi.Domain.CS1;
+namespace SkyveApi.Domain.Generic;
 
-[DynamicSqlClass("BlackListIds")]
+[DynamicSqlClass("CS2_BlackListIds")]
 public class BlackListId : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]
-	public ulong SteamId { get; set; }
+	public ulong Id { get; set; }
 }

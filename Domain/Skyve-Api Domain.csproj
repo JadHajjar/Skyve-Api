@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build">
-	<Import Project="../../Skyve/Config.props" />
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build">
+	<Import Project="..\..\Skyve\Config.props" />
 	<Import Project="..\..\Extensions\Extensions.Sql\Extensions.Sql.projitems" Label="Shared" />
 	
 	<PropertyGroup>
-		<TargetFramework Condition="'$(GameVersion)' != 'API'">net4.7.2</TargetFramework>
-		<TargetFramework Condition="'$(GameVersion)' == 'API'">net6.0</TargetFramework>
 		<RootNamespace>SkyveApi.Domain</RootNamespace>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<TargetName>Skyve.Api.Domain</TargetName>
+		<TargetFramework Condition="'$(GameVersion)' == 'API'">net6.0</TargetFramework>
 	</PropertyGroup>
 	
 	<ItemGroup>

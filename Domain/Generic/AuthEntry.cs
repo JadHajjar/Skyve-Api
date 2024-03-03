@@ -1,5 +1,7 @@
 ﻿using Extensions.Sql;
+
 using Skyve.Compatibility.Domain.Enums;
+
 using System;
 
 namespace SkyveApi.Domain.Generic;

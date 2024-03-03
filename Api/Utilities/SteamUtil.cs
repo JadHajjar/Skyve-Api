@@ -1,6 +1,9 @@
 using Extensions.Sql;
+
+using Skyve.Compatibility.Domain;
+
 using SkyveApi.Domain.CS1;
-using SkyveApi.Domain.Generic;
+
 using System.Text.Json;
 
 namespace SkyveApi.Utilities;

@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("UserProfileContents")]
+[DynamicSqlClass("CS1_UserProfileContents")]
 public class UserProfileContent : IDynamicSql
 {
 	[DynamicSqlProperty(Indexer = true)]

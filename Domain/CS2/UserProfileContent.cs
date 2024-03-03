@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS2;
 
-[DynamicSqlClass("UserProfileContents")]
+[DynamicSqlClass("CS2_UserProfileContents")]
 public class UserProfileContent : IDynamicSql
 {
 	[DynamicSqlProperty(Indexer = true)]
@@ -15,5 +15,5 @@ public class UserProfileContent : IDynamicSql
 	public bool IsMod { get; set; }
 	[DynamicSqlProperty]
 	public bool Enabled { get; set; }
-	public bool IsCodeMod { get => IsMod; set=> IsMod=value; }
+	public bool IsCodeMod { get => IsMod; set => IsMod = value; }
 }

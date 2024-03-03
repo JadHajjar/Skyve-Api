@@ -4,7 +4,7 @@ using System;
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("SteamUsers")]
+[DynamicSqlClass("CS1_SteamUsers")]
 public class SteamUser : IDynamicSql
 {
 	public SteamUser(SteamUserEntry entry)

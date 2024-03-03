@@ -3,7 +3,7 @@
 namespace SkyveApi.Domain.CS1;
 
 [DynamicSqlClass("PackageTags")]
-public class PackageTag : IDynamicSql
+public class PackageTagData : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true, Indexer = true)]
 	public ulong PackageId { get; set; }

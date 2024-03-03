@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("Authors")]
+[DynamicSqlClass("CS1_Authors")]
 public class Author : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]

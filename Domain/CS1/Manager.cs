@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("Managers")]
+[DynamicSqlClass("CS1_Managers")]
 public class Manager : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]

@@ -2,7 +2,9 @@ using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
 
-using SkyveApi.Domain.CS2;
+using Skyve.Compatibility.Domain;
+
+using SkyveApi.Domain.CS1;
 using SkyveApi.Domain.Generic;
 using SkyveApi.Utilities;
 
@@ -56,14 +58,14 @@ public class CS1ApiController : ControllerBase
 		var blackListNames = DynamicSql.SqlGet<BlackListName>();
 		var packages = DynamicSql.SqlGet<CompatibilityPackageData>();
 		var authors = DynamicSql.SqlGet<Author>();
-		var packageLinks = DynamicSql.SqlGet<PackageLink>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
-		var packageStatuses = DynamicSql.SqlGet<PackageStatus>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
-		var packageInteractions = DynamicSql.SqlGet<PackageInteraction>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
-		var packageTags = DynamicSql.SqlGet<PackageTag>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
+		var packageLinks = DynamicSql.SqlGet<PackageLinkData>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
+		var packageStatuses = DynamicSql.SqlGet<PackageStatusData>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
+		var packageInteractions = DynamicSql.SqlGet<PackageInteractionData>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
+		var packageTags = DynamicSql.SqlGet<PackageTagData>().GroupBy(x => x.PackageId).ToDictionary(x => x.Key);
 
 		for (var i = 0; i < packages.Count; i++)
 		{
-			var id = packages[i].Id;
+			var id = packages[i].SteamId;
 
 			if (packageLinks.ContainsKey(id))
 			{
@@ -86,7 +88,7 @@ public class CS1ApiController : ControllerBase
 			}
 		}
 
-		data.BlackListedIds = new(blackListIds.Select(x => x.SteamId));
+		data.BlackListedIds = new(blackListIds.Select(x => x.Id));
 		data.BlackListedNames = new(blackListNames.Select(x => x.Name!));
 		data.Packages = packages;
 		data.Authors = authors;
@@ -102,10 +104,10 @@ public class CS1ApiController : ControllerBase
 		var blackListIds = DynamicSql.SqlGet<BlackListId>();
 		var blackListNames = DynamicSql.SqlGet<BlackListName>();
 
-		data.BlackListedIds = new(blackListIds.Select(x => x.SteamId));
+		data.BlackListedIds = new(blackListIds.Select(x => x.Id));
 		data.BlackListedNames = new(blackListNames.Select(x => x.Name!));
 
-		var package = new CompatibilityPackageData { Id = steamId }.SqlGetById();
+		var package = new CompatibilityPackageData { SteamId = steamId }.SqlGetById();
 
 		if (package is null)
 		{
@@ -115,11 +117,11 @@ public class CS1ApiController : ControllerBase
 			return data;
 		}
 
-		var author = new Author { SteamId = package.Id }.SqlGetById();
-		var packageLinks = new PackageLink { PackageId = steamId }.SqlGetByIndex();
-		var packageStatuses = new PackageStatus { PackageId = steamId }.SqlGetByIndex();
-		var packageInteractions = new PackageInteraction { PackageId = steamId }.SqlGetByIndex();
-		var packageTags = new PackageTag { PackageId = steamId }.SqlGetByIndex();
+		var author = new Author { SteamId = package.SteamId }.SqlGetById();
+		var packageLinks = new PackageLinkData { PackageId = steamId }.SqlGetByIndex();
+		var packageStatuses = new PackageStatusData { PackageId = steamId }.SqlGetByIndex();
+		var packageInteractions = new PackageInteractionData { PackageId = steamId }.SqlGetByIndex();
+		var packageTags = new PackageTagData { PackageId = steamId }.SqlGetByIndex();
 
 		package.Links = packageLinks;
 		package.Statuses = packageStatuses;
@@ -173,32 +175,32 @@ public class CS1ApiController : ControllerBase
 
 			if (package.BlackListId)
 			{
-				new BlackListId { SteamId = package.Id }.SqlAdd(tr: transaction);
+				new BlackListId { Id = package.SteamId }.SqlAdd(tr: transaction);
 			}
 			else
 			{
-				new BlackListId { SteamId = package.Id }.SqlDeleteOne(tr: transaction);
+				new BlackListId { Id = package.SteamId }.SqlDeleteOne(tr: transaction);
 			}
 
 			if (package.BlackListName)
 			{
-				new BlackListName { Name = package.Name }.SqlAdd(tr: transaction);
+				new BlackListName { Name = package.Name ?? string.Empty }.SqlAdd(tr: transaction);
 			}
 			else
 			{
-				new BlackListName { Name = package.Name }.SqlDeleteOne(tr: transaction);
+				new BlackListName { Name = package.Name ?? string.Empty }.SqlDeleteOne(tr: transaction);
 			}
 
-			new PackageStatus { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
-			new PackageInteraction { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
-			new PackageTag { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
-			new PackageLink { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			new PackageStatusData { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			new PackageInteractionData { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			new PackageTagData { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
+			new PackageLinkData { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
 
 			if (package.Statuses is not null)
 			{
 				foreach (var item in package.Statuses)
 				{
-					item.PackageId = package.Id;
+					item.PackageId = package.SteamId;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -207,7 +209,7 @@ public class CS1ApiController : ControllerBase
 			{
 				foreach (var item in package.Interactions)
 				{
-					item.PackageId = package.Id;
+					item.PackageId = package.SteamId;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -216,7 +218,7 @@ public class CS1ApiController : ControllerBase
 			{
 				foreach (var item in package.Links)
 				{
-					item.PackageId = package.Id;
+					item.PackageId = package.SteamId;
 					item.SqlAdd(true, transaction);
 				}
 			}
@@ -225,11 +227,11 @@ public class CS1ApiController : ControllerBase
 			{
 				foreach (var item in package.Tags)
 				{
-					new PackageTag { PackageId = package.Id, Tag = item }.SqlAdd(true, transaction);
+					new PackageTagData { PackageId = package.SteamId, Tag = item }.SqlAdd(true, transaction);
 				}
 			}
 
-			new ReviewRequest { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			new ReviewRequestData { PackageId = package.SteamId }.SqlDeleteByIndex(tr: transaction);
 
 			transaction.Commit();
 
@@ -247,8 +249,8 @@ public class CS1ApiController : ControllerBase
 	public Dictionary<string, string?> Translations()
 	{
 		var notes = DynamicSql.SqlGet<CompatibilityPackageData>($"[{nameof(CompatibilityPackageData.Note)}] IS NOT NULL AND [{nameof(CompatibilityPackageData.Note)}] <> ''");
-		var interactions = DynamicSql.SqlGet<PackageInteraction>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
-		var statuses = DynamicSql.SqlGet<PackageStatus>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
+		var interactions = DynamicSql.SqlGet<PackageInteractionData>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
+		var statuses = DynamicSql.SqlGet<PackageStatusData>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
 
 		var dictionary = new Dictionary<string, string?>();
 
@@ -271,7 +273,7 @@ public class CS1ApiController : ControllerBase
 	}
 
 	[HttpPost(nameof(RequestReview))]
-	public ApiResponse RequestReview([FromBody] ReviewRequest request)
+	public ApiResponse RequestReview([FromBody] ReviewRequestData request)
 	{
 		try
 		{
@@ -293,7 +295,7 @@ public class CS1ApiController : ControllerBase
 	}
 
 	[HttpGet(nameof(GetReviewRequests))]
-	public List<ReviewRequestNoLog> GetReviewRequests()
+	public List<ReviewRequestNoLogData> GetReviewRequests()
 	{
 		if (!TryGetSteamId(out var userId))
 		{
@@ -307,11 +309,11 @@ public class CS1ApiController : ControllerBase
 			return [];
 		}
 
-		return DynamicSql.SqlGet<ReviewRequestNoLog>();
+		return DynamicSql.SqlGet<ReviewRequestNoLogData>();
 	}
 
 	[HttpGet(nameof(GetReviewRequest))]
-	public ReviewRequest GetReviewRequest(ulong userId, ulong packageId)
+	public ReviewRequestData GetReviewRequest(ulong userId, ulong packageId)
 	{
 		if (!TryGetSteamId(out var senderId))
 		{
@@ -325,11 +327,11 @@ public class CS1ApiController : ControllerBase
 			return new();
 		}
 
-		return new ReviewRequest { UserId = userId, PackageId = packageId }.SqlGetById();
+		return new ReviewRequestData { UserId = userId, PackageId = packageId }.SqlGetById();
 	}
 
 	[HttpPost(nameof(ProcessReviewRequest))]
-	public ApiResponse ProcessReviewRequest([FromBody] ReviewRequest request)
+	public ApiResponse ProcessReviewRequest([FromBody] ReviewRequestData request)
 	{
 		try
 		{

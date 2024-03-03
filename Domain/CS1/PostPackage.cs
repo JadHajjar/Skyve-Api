@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("Packages")]
+[DynamicSqlClass("CS1_Packages")]
 public class PostPackage : CompatibilityPackageData
 {
 	public Author? Author { get; set; }

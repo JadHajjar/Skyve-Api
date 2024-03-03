@@ -1,6 +1,7 @@
 ﻿using Extensions.Sql;
 
 using Skyve.Compatibility.Domain;
+using Skyve.Compatibility.Domain.Enums;
 
 using System;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Linq;
 namespace SkyveApi.Domain.CS1;
 
 [DynamicSqlClass("PackageInteractions")]
-public class PackageInteraction : IDynamicSql
+public class PackageInteractionData : IDynamicSql
 {
 #if API
 	[DynamicSqlProperty(PrimaryKey = true, Indexer = true), System.Text.Json.Serialization.JsonIgnore]
@@ -31,12 +32,12 @@ public class PackageInteraction : IDynamicSql
 #endif
 	public string? PackageList { get => Packages is null ? null : string.Join(",", Packages); set => Packages = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToArray(); }
 
-	public PackageInteraction()
+	public PackageInteractionData()
 	{
 
 	}
 
-	public PackageInteraction(InteractionType type, StatusAction action = StatusAction.NoAction)
+	public PackageInteractionData(InteractionType type, StatusAction action = StatusAction.NoAction)
 	{
 		Type = type;
 		Action = action;

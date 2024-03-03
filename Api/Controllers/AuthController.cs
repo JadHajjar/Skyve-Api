@@ -1,6 +1,4 @@
-﻿using SkyveApi.Domain.CS1;
-
-using Extensions.Sql;
+﻿using Extensions.Sql;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;

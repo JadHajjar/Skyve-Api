@@ -1,6 +1,8 @@
 ﻿using Extensions.Sql;
 
 using Skyve.Compatibility.Domain;
+using Skyve.Compatibility.Domain.Enums;
+using Skyve.Domain.Enums;
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +36,7 @@ public class CompatibilityPackageData : IDynamicSql
 	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse).ToArray(); }
 	public uint[]? RequiredDLCs { get; set; }
 	public List<string>? Tags { get; set; }
-	public List<PackageLink>? Links { get; set; }
-	public List<PackageStatus>? Statuses { get; set; }
-	public List<PackageInteraction>? Interactions { get; set; }
+	public List<PackageLinkData>? Links { get; set; }
+	public List<PackageStatusData>? Statuses { get; set; }
+	public List<PackageInteractionData>? Interactions { get; set; }
 }

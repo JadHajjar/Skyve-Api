@@ -1,19 +1,17 @@
 ﻿using Extensions.Sql;
 
-using Skyve.Compatibility.Domain;
+namespace SkyveApi.Domain.CS2;
 
-namespace SkyveApi.Domain.CS1;
-
-[DynamicSqlClass("PackageLinks")]
-public class PackageLink : IDynamicSql
+[DynamicSqlClass("CS2_PackageLinks")]
+public class PackageLinkData : IDynamicSql
 {
 #if API
 	[DynamicSqlProperty(Indexer = true), System.Text.Json.Serialization.JsonIgnore]
-#endif
 	public ulong PackageId { get; set; }
+#endif
 
 	[DynamicSqlProperty]
-	public LinkType Type { get; set; }
+	public int Type { get; set; }
 
 	[DynamicSqlProperty]
 	public string? Url { get; set; }
