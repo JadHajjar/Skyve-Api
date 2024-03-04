@@ -3,14 +3,14 @@
 using System;
 
 namespace SkyveApi.Domain.CS1;
-[DynamicSqlClass("CS2_ReviewRequests")]
+[DynamicSqlClass("CS1_ReviewRequests")]
 public class ReviewRequestData : ReviewRequestNoLogData
 {
 	[DynamicSqlProperty]
 	public byte[]? LogFile { get; set; }
 }
 
-[DynamicSqlClass("CS2_ReviewRequests")]
+[DynamicSqlClass("CS1_ReviewRequests")]
 public class ReviewRequestNoLogData : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true, Indexer = true)]
