@@ -6,7 +6,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<RootNamespace>SkyveApi</RootNamespace>
-		<TargetName>Skyve.Api</TargetName>
 		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
 
