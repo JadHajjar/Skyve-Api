@@ -249,8 +249,8 @@ public class CS1ApiController : ControllerBase
 	public Dictionary<string, string?> Translations()
 	{
 		var notes = DynamicSql.SqlGet<CompatibilityPackageData>($"[{nameof(CompatibilityPackageData.Note)}] IS NOT NULL AND [{nameof(CompatibilityPackageData.Note)}] <> ''");
-		var interactions = DynamicSql.SqlGet<PackageInteractionData>($"[{nameof(PackageInteraction.Note)}] IS NOT NULL AND [{nameof(PackageInteraction.Note)}] <> ''");
-		var statuses = DynamicSql.SqlGet<PackageStatusData>($"[{nameof(PackageStatus.Note)}] IS NOT NULL AND [{nameof(PackageStatus.Note)}] <> ''");
+		var interactions = DynamicSql.SqlGet<PackageInteractionData>($"[{nameof(PackageInteractionData.Note)}] IS NOT NULL AND [{nameof(PackageInteractionData.Note)}] <> ''");
+		var statuses = DynamicSql.SqlGet<PackageStatusData>($"[{nameof(PackageStatusData.Note)}] IS NOT NULL AND [{nameof(PackageStatusData.Note)}] <> ''");
 
 		var dictionary = new Dictionary<string, string?>();
 

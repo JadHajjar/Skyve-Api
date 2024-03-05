@@ -1,8 +1,5 @@
 ﻿using Extensions.Sql;
 
-using Skyve.Compatibility.Domain;
-using Skyve.Compatibility.Domain.Enums;
-
 using System;
 using System.Linq;
 
@@ -17,10 +14,10 @@ public class PackageStatusData : IDynamicSql
 	public ulong PackageId { get; set; }
 
 	[DynamicSqlProperty(PrimaryKey = true)]
-	public StatusType Type { get; set; }
+	public int Type { get; set; }
 
 	[DynamicSqlProperty]
-	public StatusAction Action { get; set; }
+	public int Action { get; set; }
 
 	public ulong[]? Packages { get; set; }
 
@@ -35,11 +32,5 @@ public class PackageStatusData : IDynamicSql
 	public PackageStatusData()
 	{
 
-	}
-
-	public PackageStatusData(StatusType type, StatusAction action = StatusAction.NoAction)
-	{
-		Type = type;
-		Action = action;
 	}
 }

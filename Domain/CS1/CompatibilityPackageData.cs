@@ -1,9 +1,5 @@
 ﻿using Extensions.Sql;
 
-using Skyve.Compatibility.Domain;
-using Skyve.Compatibility.Domain.Enums;
-using Skyve.Domain.Enums;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +21,11 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty]
 	public DateTime ReviewDate { get; set; }
 	[DynamicSqlProperty]
-	public PackageStability Stability { get; set; }
+	public int Stability { get; set; }
 	[DynamicSqlProperty]
-	public PackageUsage Usage { get; set; } = (PackageUsage)(-1);
+	public int Usage { get; set; } = -1;
 	[DynamicSqlProperty]
-	public PackageType Type { get; set; }
+	public int Type { get; set; }
 #if API
 	[DynamicSqlProperty(ColumnName = nameof(RequiredDLCs)), System.Text.Json.Serialization.JsonIgnore]
 #endif

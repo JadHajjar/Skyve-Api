@@ -8,14 +8,18 @@
 		<Nullable>enable</Nullable>
 		<TargetName>Skyve.Api.Domain</TargetName>
 	</PropertyGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-		<PackageReference Include="System.Text.Json" Version="8.0.2" />
+
+	<PropertyGroup Condition="'$(GameVersion)' == 'API'">
+		<TargetFramework>net6.0</TargetFramework>
+		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(GameVersion)' == 'API'">
+	  <Compile Include="..\..\Skyve\Skyve.Compatibility\Domain\ApiResponse.cs" Link="Generic\ApiResponse.cs" />
 	</ItemGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\..\Skyve\Skyve.Compatibility\Skyve.Compatibility.csproj" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(GameVersion)' == 'CS2'">

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Text.RegularExpressions;
 using SkyveApi.Domain.Generic;
-using Skyve.Compatibility.Domain.Enums;
 
 namespace SkyveApi.Controllers;
 
@@ -54,7 +53,7 @@ public class AuthController : ControllerBase
 			new AuthEntry
 			{
 				Guid = guid,
-				Type = AuthType.Steam,
+				Type = 1,
 				Value = _steamIdRegex.Match(idString!).Groups[1].Value
 			}.SqlAdd();
 		}

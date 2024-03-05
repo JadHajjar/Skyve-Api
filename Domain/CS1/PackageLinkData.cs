@@ -1,8 +1,5 @@
 ﻿using Extensions.Sql;
 
-using Skyve.Compatibility.Domain;
-using Skyve.Domain.Enums;
-
 namespace SkyveApi.Domain.CS1;
 
 [DynamicSqlClass("PackageLinks")]
@@ -14,7 +11,7 @@ public class PackageLinkData : IDynamicSql
 	public ulong PackageId { get; set; }
 
 	[DynamicSqlProperty]
-	public LinkType Type { get; set; }
+	public int Type { get; set; }
 
 	[DynamicSqlProperty]
 	public string? Url { get; set; }

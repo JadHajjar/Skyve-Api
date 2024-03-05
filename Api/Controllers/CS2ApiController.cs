@@ -7,9 +7,11 @@ using Skyve.Compatibility.Domain;
 
 using SkyveApi.Domain.CS2;
 using SkyveApi.Domain.Generic;
+using SkyveApi.Utilities;
 
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace SkyveApi.Controllers;
 
@@ -64,7 +66,7 @@ public class CS2ApiController : ControllerBase
 			package.Links = new PackageLinkData { PackageId = packageId }.SqlGetByIndex();
 			package.Statuses = new PackageStatusData { PackageId = packageId }.SqlGetByIndex();
 			package.Interactions = new PackageInteractionData { PackageId = packageId }.SqlGetByIndex();
-			package.Tags = new PackageTagData { PackageId = packageId }.SqlGetByIndex().ToList(x => x.Tag);
+			package.Tags = new PackageTagData { PackageId = packageId }.SqlGetByIndex().Select(x => x.Tag).ToList();
 		}
 
 		return package;
@@ -75,8 +77,8 @@ public class CS2ApiController : ControllerBase
 	{
 		return new Blacklist
 		{
-			BlackListedIds = DynamicSql.SqlGet<BlackListId>().ToList(x => x.Id),
-			BlackListedNames = DynamicSql.SqlGet<BlackListName>().ToList(x => x.Name),
+			BlackListedIds = DynamicSql.SqlGet<BlackListId>().Select(x => x.Id).ToList(),
+			BlackListedNames = DynamicSql.SqlGet<BlackListName>().Select(x => x.Name).ToList(),
 		};
 	}
 

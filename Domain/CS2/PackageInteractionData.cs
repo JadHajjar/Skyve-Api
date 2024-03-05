@@ -1,7 +1,5 @@
 ﻿using Extensions.Sql;
 
-using Skyve.Compatibility.Domain.Enums;
-
 using System;
 using System.Linq;
 
@@ -34,11 +32,5 @@ public class PackageInteractionData : IDynamicSql
 	public PackageInteractionData()
 	{
 
-	}
-
-	public PackageInteractionData(InteractionType type, StatusAction action = StatusAction.NoAction)
-	{
-		Type = (int)type;
-		Action = (int)action;
 	}
 }
