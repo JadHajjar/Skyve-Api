@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("PackageLinks")]
+[DynamicSqlClass("CS1_PackageLinks")]
 public class PackageLinkData : IDynamicSql
 {
 #if API

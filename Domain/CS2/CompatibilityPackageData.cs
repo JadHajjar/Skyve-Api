@@ -21,6 +21,8 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty]
 	public DateTime ReviewDate { get; set; }
 	[DynamicSqlProperty]
+	public string? ReviewedGameVersion { get; set; }
+	[DynamicSqlProperty]
 	public int Stability { get; set; } // PackageStability
 	[DynamicSqlProperty]
 	public int Usage { get; set; } = -1; // PackageUsage
@@ -28,7 +30,7 @@ public class CompatibilityPackageData : IDynamicSql
 	public int Type { get; set; } // PackageType
 #if API
 	[DynamicSqlProperty(ColumnName = nameof(RequiredDLCs)), System.Text.Json.Serialization.JsonIgnore]
-	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse).ToArray(); }
+	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse).ToList(); }
 #endif
 	public List<uint>? RequiredDLCs { get; set; }
 	public List<string>? Tags { get; set; }

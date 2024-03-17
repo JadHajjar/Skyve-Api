@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace SkyveApi.Domain.CS1;
-[DynamicSqlClass("Packages")]
+[DynamicSqlClass("CS1_Packages")]
 public class CompatibilityPackageData : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true)]

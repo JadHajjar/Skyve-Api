@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("PackageStatuses")]
+[DynamicSqlClass("CS1_PackageStatuses")]
 public class PackageStatusData : IDynamicSql
 {
 #if API

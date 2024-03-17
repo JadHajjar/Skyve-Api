@@ -2,7 +2,7 @@
 
 namespace SkyveApi.Domain.CS1;
 
-[DynamicSqlClass("PackageTags")]
+[DynamicSqlClass("CS1_PackageTags")]
 public class PackageTagData : IDynamicSql
 {
 	[DynamicSqlProperty(PrimaryKey = true, Indexer = true)]

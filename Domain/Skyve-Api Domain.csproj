@@ -7,15 +7,18 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<TargetName>Skyve.Api.Domain</TargetName>
+		<!--
+		<TargetFramework>net6.0</TargetFramework>
+		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+		-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(GameVersion)' == 'API'">
 		<TargetFramework>net6.0</TargetFramework>
-		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(GameVersion)' == 'API'">
-	  <Compile Include="..\..\Skyve\Skyve.Compatibility\Domain\ApiResponse.cs" Link="Generic\ApiResponse.cs" />
+		<Compile Include="..\..\Skyve\Skyve.Compatibility\Domain\ApiResponse.cs" Link="Generic\ApiResponse.cs" />
 	</ItemGroup>
 	
 	<ItemGroup>
