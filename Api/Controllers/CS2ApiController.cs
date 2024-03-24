@@ -271,6 +271,17 @@ public class CS2ApiController : ControllerBase
 		}
 	}
 
+	[HttpGet(nameof(Announcements))]
+	public List<AnnouncementData> Announcements()
+	{
+		if (!TryGetUserId(out var userId))
+		{
+			return [];
+		}
+
+		return DynamicSql.SqlGet<AnnouncementData>();
+	}
+
 	private static Dictionary<T2, List<T>> GroupBy<T, T2>(List<T> packageLinks, Func<T, T2> value) where T2 : notnull
 	{
 		var dictionary = new Dictionary<T2, List<T>>();
