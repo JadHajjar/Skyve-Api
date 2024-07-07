@@ -36,6 +36,8 @@ public class ReviewRequestNoLogData : IDynamicSql
 	[DynamicSqlProperty]
 	public string? PackageNote { get; set; }
 	[DynamicSqlProperty]
+	public string? SaveUrl { get; set; }
+	[DynamicSqlProperty]
 	public bool IsInteraction { get; set; }
 	[DynamicSqlProperty]
 	public bool IsStatus { get; set; }

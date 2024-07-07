@@ -7,4 +7,5 @@ public class PostPackage : CompatibilityPackageData
 {
 	public bool BlackListId { get; set; }
 	public bool BlackListName { get; set; }
+	public string? EditNote { get; set; }
 }

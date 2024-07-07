@@ -1,4 +1,3 @@
-using Extensions;
 using Extensions.Sql;
 
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +9,6 @@ using SkyveApi.Domain.Generic;
 using SkyveApi.Utilities;
 
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 
 namespace SkyveApi.Controllers;
 
@@ -93,25 +90,25 @@ public class CS2ApiController : ControllerBase
 	{
 		if (package is null)
 		{
-			return new() { Success = false, Message = "Package was empty" };
+			return new() { Message = "Payload was empty" };
 		}
 
 		if (!TryGetUserId(out var userId))
 		{
-			return new() { Success = false, Message = "Unauthorized" };
+			return NoAuth();
 		}
 
 		var user = DynamicSql.SqlGetById(new UserData { Id = userId });
 
 		if ((package.AuthorId != userId && !(user?.Manager ?? false)) || (user?.Malicious ?? false))
 		{
-			return new() { Success = false, Message = "Unauthorized" };
+			return NoAuth();
 		}
-
-		using var transaction = SqlHandler.CreateTransaction();
 
 		try
 		{
+			using var transaction = SqlHandler.CreateTransaction();
+
 			package.SqlAdd(true, transaction);
 
 			if (package.BlackListId)
@@ -172,17 +169,39 @@ public class CS2ApiController : ControllerBase
 				}
 			}
 
-			new ReviewRequestData { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			if (user?.Manager ?? false)
+			{
+				var requests = new ReviewRequestData { PackageId = package.Id }.SqlGetByIndex(tr: transaction);
+
+				foreach (var item in requests)
+				{
+					new ReviewReplyData
+					{
+						PackageId = package.Id,
+						Message = "ReviewIsUpdated",
+						Timestamp = DateTime.UtcNow,
+						Username = item.UserId
+					}.SqlAdd(true, tr: transaction);
+				}
+
+				new ReviewRequestData { PackageId = package.Id }.SqlDeleteByIndex(tr: transaction);
+			}
+
+			new PackageEditData
+			{
+				PackageId = package.Id,
+				Username = userId,
+				EditDate = DateTime.UtcNow,
+				Note = package.EditNote
+			}.SqlAdd(tr: transaction);
 
 			transaction.Commit();
 
-			return new() { Success = true, Message = "Success" };
+			return new() { Success = true };
 		}
 		catch (Exception ex)
 		{
-			((SqlTransaction)transaction).Rollback();
-
-			return new() { Success = false, Message = ex.Message };
+			return new() { Message = ex.Message };
 		}
 	}
 
@@ -191,20 +210,22 @@ public class CS2ApiController : ControllerBase
 	{
 		try
 		{
-			if (!TryGetUserId(out var userId))
+			if (!TryGetUserId(out var userId) || string.IsNullOrEmpty(userId))
 			{
-				return new() { Success = false, Message = "Unauthorized" };
+				return NoAuth();
 			}
 
 			request.UserId = userId;
 			request.Timestamp = DateTime.UtcNow;
 			request.SqlAdd(true);
 
+			new ReviewReplyData { Username = userId, PackageId = request.PackageId }.SqlDeleteOne();
+
 			return new() { Success = true };
 		}
 		catch (Exception ex)
 		{
-			return new() { Success = false, Message = ex.Message };
+			return new() { Message = ex.Message };
 		}
 	}
 
@@ -244,6 +265,24 @@ public class CS2ApiController : ControllerBase
 		return new ReviewRequestData { UserId = userId, PackageId = packageId }.SqlGetById();
 	}
 
+	[HttpGet(nameof(GetPackageEdits))]
+	public List<PackageEditData> GetPackageEdits(ulong packageId)
+	{
+		if (!TryGetUserId(out var senderId))
+		{
+			return [];
+		}
+
+		var user = new UserData { Id = senderId }.SqlGetById();
+
+		if (user is null || !user.Manager)
+		{
+			return [];
+		}
+
+		return new PackageEditData { PackageId = packageId }.SqlGetByIndex();
+	}
+
 	[HttpPost(nameof(ProcessReviewRequest))]
 	public ApiResponse ProcessReviewRequest([FromBody] ReviewRequestData request)
 	{
@@ -251,14 +290,14 @@ public class CS2ApiController : ControllerBase
 		{
 			if (!TryGetUserId(out var userId))
 			{
-				return new() { Success = false, Message = "Unauthorized" };
+				return NoAuth();
 			}
 
 			var user = new UserData { Id = userId }.SqlGetById();
 
 			if (user is null || !user.Manager)
 			{
-				return new() { Success = false, Message = "Unauthorized" };
+				return NoAuth();
 			}
 
 			request.SqlDeleteOne();
@@ -267,7 +306,7 @@ public class CS2ApiController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			return new() { Success = false, Message = ex.Message };
+			return new() { Message = ex.Message };
 		}
 	}
 
@@ -279,7 +318,113 @@ public class CS2ApiController : ControllerBase
 			return [];
 		}
 
-		return DynamicSql.SqlGet<AnnouncementData>();
+		return DynamicSql.SqlGet<AnnouncementData>($"[{nameof(AnnouncementData.EndDate)}] IS NULL OR [{nameof(AnnouncementData.EndDate)}] > GETDATE()");
+	}
+
+	[HttpGet(nameof(GetReviewMessages))]
+	public List<ReviewReplyData> GetReviewMessages()
+	{
+		if (!TryGetUserId(out var senderId))
+		{
+			return [];
+		}
+
+		return new ReviewReplyData { Username = senderId }.SqlGetByIndex();
+	}
+
+	[HttpGet(nameof(GetReviewStatus))]
+	public ReviewReplyData? GetReviewStatus(ulong packageId)
+	{
+		if (!TryGetUserId(out var senderId))
+		{
+			return null;
+		}
+
+		var reply = new ReviewReplyData { Username = senderId, PackageId = packageId }.SqlGetById();
+
+		if (reply is not null)
+		{
+			return reply;
+		}
+
+		var request = new ReviewRequestData { PackageId = packageId, UserId = senderId }.SqlGetById();
+
+		if (request is not null)
+		{
+			return new ReviewReplyData
+			{
+				Message = "ReviewPending",
+				PackageId = packageId,
+				Timestamp = request.Timestamp,
+			};
+		}
+
+		return null;
+	}
+
+	[HttpPost(nameof(SendReviewMessage))]
+	public ApiResponse SendReviewMessage([FromBody] ReviewReplyData reply)
+	{
+		if (!TryGetUserId(out var senderId) || string.IsNullOrEmpty(senderId))
+		{
+			return NoAuth();
+		}
+
+		if (reply is null)
+		{
+			return new() { Message = "Payload was empty" };
+		}
+
+		var user = new UserData { Id = senderId }.SqlGetById();
+
+		if (user is null || !user.Manager)
+		{
+			return NoAuth();
+		}
+
+		reply.Timestamp = DateTime.UtcNow;
+
+		try
+		{
+			reply.SqlAdd(true);
+
+			return new ApiResponse { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Message = ex.Message };
+		}
+	}
+
+	[HttpDelete(nameof(DeleteReviewMessage))]
+	public ApiResponse DeleteReviewMessage(ulong packageId)
+	{
+		if (!TryGetUserId(out var senderId) || string.IsNullOrEmpty(senderId))
+		{
+			return NoAuth();
+		}
+
+		try
+		{
+			new ReviewReplyData { Username = senderId, PackageId = packageId }.SqlDeleteOne();
+
+			return new ApiResponse { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Message = ex.Message };
+		}
+	}
+
+	[HttpGet(nameof(GetGoFileInfo))]
+	public GoFileInfoData GetGoFileInfo()
+	{
+		if (!TryGetUserId(out var userId))
+		{
+			return new();
+		}
+
+		return DynamicSql.SqlGetOne<GoFileInfoData>();
 	}
 
 	private static Dictionary<T2, List<T>> GroupBy<T, T2>(List<T> packageLinks, Func<T, T2> value) where T2 : notnull
@@ -318,5 +463,10 @@ public class CS2ApiController : ControllerBase
 
 		userId = string.Empty;
 		return false;
+	}
+
+	private ApiResponse NoAuth()
+	{
+		return new() { Message = "Unauthorized" };
 	}
 }
