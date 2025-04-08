@@ -32,7 +32,7 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty(ColumnName = nameof(RequiredDLCs)), System.Text.Json.Serialization.JsonIgnore]
 	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse).ToList(); }
 #endif
-	public List<uint>? RequiredDLCs { get; set; }
+	public List<ulong>? RequiredDLCs { get; set; }
 	public List<string>? Tags { get; set; }
 	public List<PackageLinkData>? Links { get; set; }
 	public List<PackageStatusData>? Statuses { get; set; }
