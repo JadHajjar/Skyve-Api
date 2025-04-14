@@ -24,6 +24,7 @@ public class CS2ApiController : ControllerBase
 		var packageStatuses = GroupBy(DynamicSql.SqlGet<PackageStatusData>(), x => x.PackageId);
 		var packageInteractions = GroupBy(DynamicSql.SqlGet<PackageInteractionData>(), x => x.PackageId);
 		var packageTags = GroupBy(DynamicSql.SqlGet<PackageTagData>(), x => x.PackageId);
+		var packageReviews = GroupBy(DynamicSql.SqlGet<ReviewRequestNoLogData>(), x => x.PackageId);
 
 		for (var i = 0; i < packages.Count; i++)
 		{
@@ -48,6 +49,11 @@ public class CS2ApiController : ControllerBase
 			{
 				packages[i].Tags = new(packageTags[id].Select(x => x.Tag!));
 			}
+
+			if (packageReviews.ContainsKey(id))
+			{
+				packages[i].ActiveReports = packageReviews[id].Count;
+			}
 		}
 
 		return packages;
@@ -64,6 +70,7 @@ public class CS2ApiController : ControllerBase
 			package.Statuses = new PackageStatusData { PackageId = packageId }.SqlGetByIndex();
 			package.Interactions = new PackageInteractionData { PackageId = packageId }.SqlGetByIndex();
 			package.Tags = new PackageTagData { PackageId = packageId }.SqlGetByIndex().Select(x => x.Tag).ToList();
+			package.ActiveReports = new ReviewRequestNoLogData { PackageId = packageId }.SqlGetByIndex().Count;
 		}
 
 		return package;
