@@ -27,10 +27,14 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty]
 	public int Usage { get; set; } = -1; // PackageUsage
 	[DynamicSqlProperty]
+	public int SavegameEffect { get; set; } // PackageUsage
+	[DynamicSqlProperty]
 	public int Type { get; set; } // PackageType
+	[DynamicSqlProperty]
+	public string? RemovalSteps { get; set; }
 #if API
 	[DynamicSqlProperty(ColumnName = nameof(RequiredDLCs)), System.Text.Json.Serialization.JsonIgnore]
-	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse).ToList(); }
+	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToList(); }
 #endif
 	public int ActiveReports { get; set; }
 	public List<ulong>? RequiredDLCs { get; set; }
