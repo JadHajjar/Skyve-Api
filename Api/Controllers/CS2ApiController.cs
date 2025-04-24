@@ -423,15 +423,24 @@ public class CS2ApiController : ControllerBase
 		}
 	}
 
-	[HttpGet(nameof(GetGoFileInfo))]
-	public GoFileInfoData GetGoFileInfo()
+	[HttpGet(nameof(GetGoFileUploadInfo))]
+	public async Task<GoFileUploadData> GetGoFileUploadInfo(string folderName)
 	{
 		if (!TryGetUserId(out var userId))
 		{
 			return new();
 		}
 
-		return DynamicSql.SqlGetOne<GoFileInfoData>();
+		var apiInfo = DynamicSql.SqlGetOne<GoFileInfoData>();
+		var folder = await GoFileHelper.CreateFolder(apiInfo.Token!, apiInfo.RootFolder!, folderName);
+		var server = await GoFileHelper.GetServer();
+
+		return new GoFileUploadData
+		{
+			Token = apiInfo.Token,
+			ServerId = server,
+			FolderId = folder
+		};
 	}
 
 	private static Dictionary<T2, List<T>> GroupBy<T, T2>(List<T> packageLinks, Func<T, T2> value) where T2 : notnull
