@@ -328,6 +328,38 @@ public class CS2ApiController : ControllerBase
 		return DynamicSql.SqlGet<AnnouncementData>($"[{nameof(AnnouncementData.EndDate)}] IS NULL OR [{nameof(AnnouncementData.EndDate)}] > GETDATE()");
 	}
 
+	[HttpPost(nameof(CreateAnnouncement))]
+	public ApiResponse CreateAnnouncement([FromBody] AnnouncementData announcement)
+	{
+		if (!TryGetUserId(out var senderId) || string.IsNullOrEmpty(senderId))
+		{
+			return NoAuth();
+		}
+
+		if (announcement is null)
+		{
+			return new() { Message = "Payload was empty" };
+		}
+
+		var user = new UserData { Id = senderId }.SqlGetById();
+
+		if (user is null || !user.Manager)
+		{
+			return NoAuth();
+		}
+
+		try
+		{
+			announcement.SqlAdd();
+
+			return new ApiResponse { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Message = ex.Message };
+		}
+	}
+
 	[HttpGet(nameof(GetReviewMessages))]
 	public List<ReviewReplyData> GetReviewMessages()
 	{
