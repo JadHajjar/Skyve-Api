@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Extensions.Sql;
+
+using Microsoft.AspNetCore.Mvc;
+
+using SkyveApi.Domain.Generic;
 
 namespace SkyveApi.Controllers;
 public class RedirectController : ControllerBase
@@ -6,31 +10,20 @@ public class RedirectController : ControllerBase
 	[Route("/")]
 	public IActionResult Home()
 	{
-		return new RedirectResult("https://mods.paradoxplaza.com/mods/75804/Windows");
+		return RedirectEndpoint("Home");
 	}
 
-	[Route("/discord")]
-	public IActionResult Discord()
+	[Route("/{key}")]
+	public IActionResult RedirectEndpoint(string key)
 	{
-		return new RedirectResult("https://discord.gg/E4k8ZEtRxd");
-	}
+		var url = new RedirectLink(key).SqlGetById()?.Link;
 
-	[Route("/guide")]
-	public IActionResult Guide()
-	{
-		return new RedirectResult("https://www.youtube.com/watch?v=mQvWrQ4rk_U");
-	}
+		if (url == null)
+		{
+			return NotFound();
+		}
 
-	[Route("/donate")]
-	public IActionResult Donate()
-	{
-		return new RedirectResult("https://ko-fi.com/chameleontbn");
-	}
-
-	[Route("/translate")]
-	public IActionResult Translate()
-	{
-		return new RedirectResult("https://crowdin.com/project/load-order-mod-2");
+		return new RedirectResult(url);
 	}
 
 	[Route("/app/{*url}")]
