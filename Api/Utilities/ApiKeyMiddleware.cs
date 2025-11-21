@@ -1,28 +1,26 @@
-﻿using System.Text.RegularExpressions;
+﻿using Extensions.Sql;
+
+using SkyveApi.Domain.Generic;
+
+using System.Text.RegularExpressions;
 
 namespace SkyveApi.Utilities;
 
-public class ApiKeyMiddleware
+public class ApiKeyMiddleware(RequestDelegate next)
 {
-	private readonly RequestDelegate _next;
-	private readonly string _apiKey;
-	private readonly Regex _regex;
-
-	public ApiKeyMiddleware(RequestDelegate next, string apiKey)
-	{
-		_next = next;
-		_apiKey = apiKey;
-		_regex = new Regex(@"^/\w+/api", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-	}
+	private readonly RequestDelegate _next = next;
+	private readonly Regex _regex = new(@"^/\w+/api", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private readonly Dictionary<string, Regex> _keys = DynamicSql.SqlGet<ApiKeys>()?.ToDictionary(x => x.ApiKey!, x => new Regex(x.AllowedDirectories ?? ".", RegexOptions.IgnoreCase | RegexOptions.Compiled), StringComparer.InvariantCultureIgnoreCase) ?? [];
 
 	public async Task Invoke(HttpContext context)
 	{
-		var regex = Regex.Match(context.Request.Path.Value ?? string.Empty, @"^/\w+/api", RegexOptions.IgnoreCase);
+		var match = _regex.Match(context.Request.Path.Value ?? string.Empty);
 
-		if (_regex.IsMatch(context.Request.Path.Value ?? string.Empty) &&
+		if (match.Success &&
 			(!context.Request.Headers.TryGetValue("API_KEY", out var apiKeyValues)
 			|| apiKeyValues.Count == 0
-			|| apiKeyValues[0] != _apiKey))
+			|| !_keys.ContainsKey(apiKeyValues[0])
+			|| !_keys[apiKeyValues[0]].IsMatch(context.Request.Path.Value ?? string.Empty)))
 		{
 			context.Response.StatusCode = 401;
 			await context.Response.WriteAsync("Unauthorized");

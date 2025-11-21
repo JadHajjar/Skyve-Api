@@ -17,4 +17,6 @@ public class UserData : IDynamicSql
 	public bool Malicious { get; set; }
 	[DynamicSqlProperty]
 	public bool Manager { get; set; }
+	[DynamicSqlProperty]
+	public bool LockedAccess { get; set; }
 }

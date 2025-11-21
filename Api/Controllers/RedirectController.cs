@@ -7,11 +7,12 @@ using SkyveApi.Domain.Generic;
 namespace SkyveApi.Controllers;
 public class RedirectController : ControllerBase
 {
-	[Route("/")]
-	public IActionResult Home()
-	{
-		return RedirectEndpoint("Home");
-	}
+	//[Route("/")]
+	//public IActionResult Home()
+	//{
+	//	return 
+	//	return RedirectEndpoint("Home");
+	//}
 
 	[Route("/{key}")]
 	public IActionResult RedirectEndpoint(string key)

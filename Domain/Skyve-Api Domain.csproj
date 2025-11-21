@@ -17,9 +17,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(GameVersion)' == 'API'">
+	<!--<ItemGroup Condition="'$(GameVersion)' == 'API'">
 		<Compile Include="..\..\Skyve\Skyve.Compatibility\Domain\ApiResponse.cs" Link="Generic\ApiResponse.cs" />
-	</ItemGroup>
+	</ItemGroup>-->
 	
 	<ItemGroup>
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />

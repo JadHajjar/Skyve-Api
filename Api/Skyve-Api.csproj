@@ -19,5 +19,11 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Domain\Skyve-Api Domain.csproj" />
+		<ProjectReference Include="..\..\Skyve\Skyve.Compatibility\Skyve.Compatibility.csproj" />
+
+		<EmbeddedResource Include="..\..\SlickControls\Properties\SlickUI.json" Link="Properties\SlickUI.json" />
+		<EmbeddedResource Include="..\..\SlickControls\Properties\SlickUI\**">
+			<Link>Properties\SlickUI\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</EmbeddedResource>
 	</ItemGroup>
 </Project>

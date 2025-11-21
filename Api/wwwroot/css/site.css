@@ -1,0 +1,591 @@
+@import url("https://fonts.googleapis.com/css2?family=Momo+Trust+Display&family=Momo+Trust+Sans:wght@200..800&display=swap");
+
+html {
+  min-height: 100%;
+  background: #1b2537;
+}
+
+:root {
+  --boldFont: "Momo Trust Display", sans-serif;
+}
+
+body {
+  color: #eaeef1;
+  padding: 2rem;
+  font-size: 1.1rem;
+  font-family: "Momo Trust Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  margin: 0;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 850rem;
+  height: 850rem;
+  background: linear-gradient(135deg, #1b2537, #354255);
+  z-index: -101;
+}
+
+.background.hexagon {
+  background-image: url("/assets/hexagon.png");
+  background-repeat: repeat;
+  background-size: 3%;
+  background-blend-mode: soft-light;
+  background-position: top left;
+  z-index: -100;
+}
+
+.svg-inline--fa {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0 0.25rem;
+}
+
+h1 {
+  font-size: 5rem;
+  font-family: var(--boldFont);
+}
+
+h2 {
+  font-size: 3.5rem;
+  font-family: var(--boldFont);
+}
+
+h3 {
+  font-size: 2.5rem;
+  font-family: var(--boldFont);
+}
+
+h4 {
+  font-size: 1.75rem;
+  font-family: var(--boldFont);
+}
+
+@media (max-width: 850px) {
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  h3 {
+    font-size: 1.75rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  body {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .svg-inline--fa {
+    width: 1rem;
+    height: 1rem;
+    margin: 0 0.25rem;
+  }
+}
+
+p {
+  margin-block: 0.5rem;
+}
+
+small {
+  font-size: 0.75rem;
+  color: #b1c1d7;
+}
+
+a,
+a:visited {
+  color: #df9943;
+  transition: background-color ease-out 0.2s, color ease-out 0.2s, box-shadow ease-out 0.2s;
+}
+
+a:hover {
+  color: inherit;
+}
+
+a:active {
+  color: #c1c7cc;
+}
+
+@property --buttonColor1 {
+  syntax: "<color>";
+  initial-value: #303b4b;
+  inherits: false;
+}
+
+@property --buttonColor2 {
+  syntax: "<color>";
+  initial-value: #3c4c63;
+  inherits: false;
+}
+
+a.button {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--buttonColor1), var(--buttonColor2));
+  transition: color ease-out 0.2s, box-shadow ease-out 0.2s, --buttonColor1 ease-out 0.2s, --buttonColor2 ease-out 0.2s;
+  color: #eaeef1;
+  font-size: 1.15rem;
+  border-radius: 0.5rem;
+  min-height: 1.6rem;
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+a.button:hover {
+  --buttonColor1: #3f516a;
+  --buttonColor2: #455b7a;
+}
+
+a.button:active {
+  --buttonColor1: #c88c42;
+  --buttonColor2: #df9943;
+  color: white;
+  box-shadow: rgba(248, 184, 106, 0.25) 0 0 0.6rem 0.2rem;
+}
+
+.top-bar {
+  width: 100%;
+  height: 5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: var(--boldFont);
+}
+
+.top-bar > a > img {
+  width: 4rem;
+  height: 4rem;
+  margin-right: 1rem;
+  transition: filter ease-out 0.25s;
+}
+
+.top-bar > a:hover > img {
+  filter: brightness(1.1) drop-shadow(0 0 0.7rem rgba(246, 207, 160, 0.5));
+}
+
+.nav-bar {
+  background-color: rgba(19, 24, 33, 0.4);
+  backdrop-filter: blur(0.3rem);
+  height: 5rem;
+  border-radius: 2.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nav-bar > a {
+  transition: background-color ease-out 0.2s, color ease-out 0.2s;
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  height: 2rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+.nav-bar > a:last-child {
+  margin-right: 1rem;
+}
+
+.nav-bar > a:hover {
+  background-color: rgba(19, 24, 33, 0.75);
+}
+
+.nav-bar > a:active {
+  background-color: rgb(49, 59, 78);
+}
+
+.nav-bar > a.active {
+  background-color: #eaeef1;
+  box-shadow: rgba(19, 24, 33, 1) 0 0 0.45rem 0.15rem;
+  color: #1b2537;
+}
+
+@media (max-width: 850px) {
+  .top-bar {
+    height: 3.5rem;
+    font-size: 0.85rem;
+  }
+
+  .top-bar > a > img {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .nav-bar {
+    height: 3.5rem;
+    border-radius: 1.75rem;
+  }
+
+  .nav-bar > a {
+    margin-left: 0.6rem;
+    padding: 0.25rem 0.5rem;
+    height: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .nav-bar > a:last-child {
+    margin-right: 0.6rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .top-bar {
+    font-size: 0.75rem;
+  }
+}
+
+.featured-section {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - 14rem);
+  font-family: var(--boldFont);
+}
+
+.featured-section > div {
+  max-width: 75rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  text-align: center;
+  justify-content: space-evenly;
+}
+
+.featured-section h1 {
+  margin-bottom: 1.5rem;
+}
+
+.featured-section span {
+  color: #df9943;
+}
+
+.featured-section p {
+  max-width: 45rem;
+  color: rgba(234, 238, 241, 0.75);
+  font-size: 1.75rem;
+}
+
+.featured-section a.button {
+  font-size: 1.5rem;
+  height: 3rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2.5rem;
+  margin: 3rem;
+  text-transform: uppercase;
+  --buttonColor1: #c1853b;
+  --buttonColor2: #e9a148;
+  color: white;
+}
+
+.featured-section a.button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0 0 0 0.5rem;
+}
+
+.featured-section a.button:hover {
+  --buttonColor1: #de9945;
+  --buttonColor2: #f8b86a;
+  color: white;
+}
+
+.featured-section a.button:active {
+  color: #df9943;
+  --buttonColor1: #eaeef1;
+  --buttonColor2: #f5f8fa;
+  box-shadow: rgba(234, 238, 241, 0.403) 0 0 0.6rem 0.2rem;
+}
+
+@media (min-width: 1850px) and (min-height: 900px) {
+  .featured-section > div {
+    max-width: 110rem;
+  }
+
+  .featured-section h1 {
+    font-size: 7.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .featured-section p {
+    max-width: 65rem;
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .featured-section a.button {
+    font-size: 2rem;
+    height: 4rem;
+    padding: 1rem 2rem;
+    border-radius: 3rem;
+  }
+
+  .featured-section a.button svg {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .featured-section {
+    min-height: calc(100vh - 12rem);
+  }
+
+  .featured-section > div {
+    max-width: 50rem;
+  }
+
+  .featured-section h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .featured-section p {
+    max-width: 30rem;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .featured-section {
+    padding: 1rem;
+    min-height: calc(100vh - 7rem);
+  }
+}
+
+.screenshots {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: calc(100% + 4rem);
+  margin: 0 -2rem;
+  overflow: hidden;
+}
+
+.screenshots .screenshot {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  font-size: 2rem;
+  margin-bottom: 5rem;
+}
+
+.screenshots .screenshot * {
+  position: relative;
+  height: 30rem;
+  padding: 1.5rem;
+}
+
+.screenshots .screenshot u {
+  position: inherit;
+  height: auto;
+  padding: 0;
+}
+
+.screenshots .screenshot img {
+  position: absolute;
+  top: 0;
+  filter: drop-shadow(0 0 1rem rgb(18, 22, 34));
+}
+
+.screenshots .screenshot .left {
+  text-align: right;
+  padding-left: 4rem;
+}
+
+.screenshots .screenshot .right {
+  text-align: left;
+  padding-right: 4rem;
+}
+
+.screenshots .screenshot .left img {
+  right: 0;
+}
+
+.screenshots .screenshot .right img {
+  left: 0;
+}
+
+.screenshots .screenshot:nth-child(odd) .left,
+.screenshots .screenshot:nth-child(even) .right {
+  flex: 6;
+}
+
+.screenshots .screenshot:nth-child(even) .left,
+.screenshots .screenshot:nth-child(odd) .right {
+  flex: 4;
+  height: 25rem;
+  padding-top: 5rem;
+}
+
+.highlighted-section {
+  margin: 1rem -2rem 3rem -2rem;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  background: rgba(8, 11, 18, 0.3);
+  font-family: var(--boldFont);
+}
+
+.highlighted-section p {
+  font-size: 1.5rem;
+  max-width: 50rem;
+  margin: 0.25rem 2rem;
+}
+
+.highlighted-section a.button {
+  font-size: 1rem;
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  margin: 3rem;
+  text-transform: uppercase;
+  --buttonColor1: #dee6f0;
+  --buttonColor2: #b1c1d7;
+  color: #1b2537;
+}
+
+.highlighted-section a.button svg {
+  width: 1rem;
+  height: 1rem;
+  margin: 0 0 0 0.5rem;
+}
+
+.highlighted-section a.button:hover {
+  --buttonColor1: #de9945;
+  --buttonColor2: #f8b86a;
+  color: white;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip-text {
+  top: 0.25rem;
+  left: 0.25rem;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  background-color: rgba(19, 24, 33, 0.75);
+  color: #f5f8fa;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.4rem;
+  max-width: 7.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: absolute;
+  z-index: 100;
+  transition: opacity 0.2s ease-out;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.label {
+  white-space: nowrap;
+  background-color: rgba(60, 70, 87, 0.75);
+  color: #f5f8fa;
+  font-size: 0.95rem;
+  border-radius: 0.25rem;
+  margin: 0 0.25rem;
+  padding: 0.1rem 0.25rem;
+}
+
+@media (min-width: 1500px) {
+  .screenshots .screenshot * {
+    height: 40rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .label {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .screenshots .screenshot {
+    font-size: 1.5rem;
+  }
+
+  .screenshots .screenshot * {
+    position: relative;
+    height: 30rem;
+    padding: 0.5rem;
+  }
+
+  .screenshots .screenshot .left {
+    margin-left: 1rem;
+    padding-left: 1rem;
+  }
+
+  .screenshots .screenshot .right {
+    margin-right: 1rem;
+    padding-right: 1rem;
+  }
+
+  .screenshots .screenshot:nth-child(even) .left,
+  .screenshots .screenshot:nth-child(odd) .right {
+    flex: 6;
+  }
+
+  .tooltip-text {
+    display: none !important;
+  }
+
+  .highlighted-section p {
+    font-size: 1.25rem;
+  }
+}
+
+.new-patch {
+  filter: hue-rotate(135deg);
+  background-color: rgba(35, 55, 96, 0.4);
+}
+
+.new-patch a.button:hover {
+  --buttonColor1: #3655a4;
+  --buttonColor2: #2256a4;
+}
+
+.new-patch a.button:active {
+  --buttonColor1: #4266c8;
+  --buttonColor2: #436ddf;
+  color: white;
+  box-shadow: rgba(125, 139, 247, 0.25) 0 0 0.6rem 0.2rem;
+}

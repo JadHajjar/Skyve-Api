@@ -36,6 +36,8 @@ public class CompatibilityPackageData : IDynamicSql
 	[DynamicSqlProperty(ColumnName = nameof(RequiredDLCs)), System.Text.Json.Serialization.JsonIgnore]
 	public string? RequiredDLCsList { get => RequiredDLCs is null ? null : string.Join(",", RequiredDLCs); set => RequiredDLCs = value?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(ulong.Parse).ToList(); }
 #endif
+	[DynamicSqlProperty]
+	public string? ThumbnailUrl { get; set; }
 	public int ActiveReports { get; set; }
 	public List<ulong>? RequiredDLCs { get; set; }
 	public List<string>? Tags { get; set; }

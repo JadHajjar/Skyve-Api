@@ -12,7 +12,7 @@ using System.Data.SqlClient;
 namespace SkyveApi.Controllers;
 
 [ApiController]
-[Route("rbapi")]
+[Route("rb/api")]
 public class RoadBuilderController : ControllerBase
 {
 	[HttpPost(nameof(SaveRoad))]

@@ -1,3 +1,4 @@
+using Extensions;
 using Extensions.Sql;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -5,9 +6,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using SkyveApi;
 using SkyveApi.Utilities;
 
+using System.Globalization;
+
+LocaleHelper.SetCultureAndCalendar(CultureInfo.CurrentCulture = new CultureInfo("en-US"));
+
+Locale.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddRazorPages();
 
 builder.Services.AddControllers();
 
@@ -27,12 +35,16 @@ var app = builder.Build();
 
 SqlHandler.ConnectionString = KEYS.CONNECTION;
 
-app.UseMiddleware<ApiKeyMiddleware>(KEYS.API_KEY);
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapRazorPages();
 
 app.Run();

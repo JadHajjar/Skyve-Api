@@ -9,6 +9,7 @@ using SkyveApi.Domain.Generic;
 using SkyveApi.Utilities;
 
 using System.Data;
+using System.Data.SqlClient;
 
 namespace SkyveApi.Controllers;
 
@@ -16,6 +17,12 @@ namespace SkyveApi.Controllers;
 [Route("v2/api")]
 public class CS2ApiController : ControllerBase
 {
+	[HttpGet(nameof(Ping))]
+	public IActionResult Ping()
+	{
+		return Ok();
+	}
+
 	[HttpGet(nameof(CompatibilityData))]
 	public List<CompatibilityPackageData> CompatibilityData()
 	{
@@ -32,22 +39,22 @@ public class CS2ApiController : ControllerBase
 
 			if (packageLinks.ContainsKey(id))
 			{
-				packages[i].Links = new(packageLinks[id]);
+				packages[i].Links = [.. packageLinks[id]];
 			}
 
 			if (packageStatuses.ContainsKey(id))
 			{
-				packages[i].Statuses = new(packageStatuses[id]);
+				packages[i].Statuses = [.. packageStatuses[id]];
 			}
 
 			if (packageInteractions.ContainsKey(id))
 			{
-				packages[i].Interactions = new(packageInteractions[id]);
+				packages[i].Interactions = [.. packageInteractions[id]];
 			}
 
 			if (packageTags.ContainsKey(id))
 			{
-				packages[i].Tags = new(packageTags[id].Select(x => x.Tag!));
+				packages[i].Tags = [.. packageTags[id].Select(x => x.Tag!)];
 			}
 
 			if (packageReviews.ContainsKey(id))
@@ -212,12 +219,65 @@ public class CS2ApiController : ControllerBase
 		}
 	}
 
+	[HttpPost(nameof(BulkUpdatePackageData))]
+	public ApiResponse BulkUpdatePackageData([FromBody] BulkCompatibilityPackageUpdateData bulkData)
+	{
+		if (bulkData is null)
+		{
+			return new() { Message = "Payload was empty" };
+		}
+
+		if (!TryGetUserId(out var userId))
+		{
+			return NoAuth();
+		}
+
+		var user = DynamicSql.SqlGetById(new UserData { Id = userId });
+
+		if (!(user?.Manager ?? false))
+		{
+			return NoAuth();
+		}
+
+		try
+		{
+			using var transaction = SqlHandler.CreateTransaction();
+
+			SqlHelper.ExecuteNonQuery((SqlTransaction)transaction, CommandType.Text,
+				$"UPDATE [CS2_Packages] SET " +
+					$"[Stability] = {bulkData.Stability}, " +
+					$"[ReviewedGameVersion] = '{bulkData.ReviewedGameVersion?.Replace("'", "''")}' " +
+				$"WHERE [Id] IN ({string.Join(',', bulkData.Packages)})");
+
+			foreach (var id in bulkData.Packages)
+			{
+				new PackageEditData
+				{
+					PackageId = id,
+					Username = userId,
+					EditDate = DateTime.UtcNow,
+					Note = "Bulk Edit"
+				}.SqlAdd(tr: transaction);
+			}
+
+			transaction.Commit();
+
+			return new() { Success = true };
+		}
+		catch (Exception ex)
+		{
+			return new() { Message = ex.Message };
+		}
+	}
+
 	[HttpPost(nameof(RequestReview))]
 	public ApiResponse RequestReview([FromBody] ReviewRequestData request)
 	{
 		try
 		{
-			if (!TryGetUserId(out var userId) || string.IsNullOrEmpty(userId))
+			if (!TryGetUserId(out var userId)
+				|| string.IsNullOrEmpty(userId)
+				|| DynamicSql.SqlGetById(new UserData { Id = userId })?.Manager == true)
 			{
 				return NoAuth();
 			}

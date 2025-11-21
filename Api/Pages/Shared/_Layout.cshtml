@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The all-in-one mod manager for Cities: Skylines II and PDX Mods.">
+    <meta name="keywords" content="Skyve, Mod, Compatibility, Paradox Mods, PDX Mods, Cities: Skylines, Cities: Skylines II">
+    <meta name="author" content="T. D. W.">
+
+    <!-- Open Graph / Social Media Meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Skyve: Mod Manager">
+    <meta property="og:description" content="The all-in-one mod manager for Cities: Skylines II and PDX Mods.">
+    <meta property="og:image" content="https://www.skyve-mod.com/assets/Skyve_Background.jpg">
+    <meta property="og:url" content="https://www.skyve-mod.com">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <title>Skyve - @ViewData["Title"]</title>
+
+    <!-- Stylesheets -->
+    <link rel="icon" type="image/x-icon" href="~/assets/favicon.ico">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/fontawesome/css/fontawesome.min.css">
+    <script defer src="~/assets/fontawesome/js/fontawesome.min.js"></script>
+    <script defer src="~/assets/fontawesome/js/regular.min.js"></script>
+    <script defer src="~/assets/fontawesome/js/solid.min.js"></script>
+    <script defer src="~/assets/fontawesome/js/brands.min.js"></script>
+
+    @await RenderSectionAsync("Headers", required: false)
+</head>
+<body>
+    <div class="background"></div>
+    <div class="background hexagon"></div>
+
+    <div class="top-bar">
+        <a href="/app" target="_blank"><img src="/assets/favicon.ico" /></a>
+        <div class="nav-bar">
+            <a href="/" class="@(ViewData["Tab"] as string == "Home" ? "active" : "")">Home</a>
+            <a href="/compatibility" class="@(ViewData["Tab"] as string == "Compatibility" ? "active" : "")">Compatibility Data</a>
+            <a href="/discord" class="@(ViewData["Tab"] as string == "Discord" ? "active" : "")">Discord</a>
+        </div>
+    </div>
+
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

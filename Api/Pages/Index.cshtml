@@ -1,0 +1,121 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+    ViewData["Tab"] = "Home";
+}
+
+<div class="featured-section">
+    <div>
+        <h1>The ultimate <span>mod manager</span> for Cities: Skylines</h1>
+        <p>The all-in-one mod manager for Cities: Skylines II and PDX Mods.</p>
+        <a class="button" href="/home">Get Skyve <i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+</div>
+
+@if (Model.ShowPatch)
+{
+    <div class="highlighted-section new-patch">
+        <h2>New patch</h2>
+        <p>Game version @Model.LatestPatch dropped recently.</p>
+        <p>Check out the current compatibility status of mods after the patch to know what mods are not working.</p>
+        <a class="button" href="/compatibility?patch=latest">View Patch Info <i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+}
+
+<div class="highlighted-section">
+    <h2>Discord</h2>
+    <p>Need help with Skyve? Or maybe just want to stay up to date?</p><p>Join the discord server and be part of the village!</p>
+    <a class="button" href="/discord">View Discord Server <i class="fa-brands fa-discord"></i></a>
+</div>
+
+<div class="screenshots">
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_02.png" />
+        </div>
+        <div class="right">
+            Get a complete view of the information that matters to <u>you</u>, right from the start.
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            Browse Paradox Mods directly from the app. No switching back and forth.
+        </div>
+        <div class="right">
+            <img src="~/assets/Screenshot_03.png" />
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_04.png" />
+        </div>
+        <div class="right">
+            Make playsets more personal by favoriting them and customizing their thumbnail and color.
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            Get a consistent experience wherever you go.
+        </div>
+        <div class="right">
+            <img src="~/assets/Screenshot_05.png" />
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_06.png" />
+        </div>
+        <div class="right">
+            View all your mods across every playset, and easily spot problematic ones.
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            Get a complete viewing experience on one page — including mod description, dependencies, links, compatibility, playsets, and much more.
+        </div>
+        <div class="right">
+            <img src="~/assets/Screenshot_07.png" />
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_08.png" />
+        </div>
+        <div class="right">
+            Get clear and detailed information about a mod’s compatibility issues.
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            View all your mods’ compatibility reports in one go.
+        </div>
+        <div class="right">
+            <img src="~/assets/Screenshot_09.png" />
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_10.png" />
+        </div>
+        <div class="right">
+            Spot session errors easily, and find resources to get better help from the community.
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            Customize your experience, because modding is never one size fits all.
+        </div>
+        <div class="right">
+            <img src="~/assets/Screenshot_11.png" />
+        </div>
+    </div>
+    <div class="screenshot">
+        <div class="left">
+            <img src="~/assets/Screenshot_12.png" />
+        </div>
+        <div class="right">
+            Make the app feel like home with full control over its style.
+        </div>
+    </div>
+</div>

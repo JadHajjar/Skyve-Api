@@ -1,0 +1,136 @@
+﻿@page
+@model SkyveApi.Pages.CompatibilityModel
+@using Microsoft.AspNetCore.Html
+@using Skyve.Compatibility.Domain.Enums
+@using System.Text.RegularExpressions
+@{
+    ViewData["Title"] = "Compatibility";
+    ViewData["Tab"] = "Compatibility";
+
+    var _tagRegex = new Regex(@"v?\d+\.\d+(\.\d+)*(-[\d\w]+)*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    var _bracketsRegex = new Regex(@"[\[\(](.+?)[\]\)]", RegexOptions.Compiled);
+
+    IHtmlContent GetTitle(string title)
+    {
+        var text = _tagRegex.Replace(title, string.Empty);
+        var tagMatches = _bracketsRegex.Matches(title);
+
+        text = _bracketsRegex.Replace(text, string.Empty).Trim('-', ']', '[', '(', ')', ' ').RemoveDoubleSpaces();
+
+        if (text.IndexOf(' ') < 0)
+        {
+            text = text.FormatWords();
+        }
+
+        foreach (Match match in tagMatches)
+        {
+            var tagText = match.Groups[1].Value.Trim();
+
+            if (tagText.ToLower() is "stable" or "deprecated" or "obsolete" or "abandoned" or "broken")
+            {
+                continue;
+            }
+
+            var color = string.Empty;
+
+
+            if (tagText.ToLower() is "alpha" or "experimental")
+                color = "broken";
+            if (tagText.ToLower() is "beta" or "test" or "testing")
+                color = "caution";
+
+            text += $" <span class=\"label {color}\">{tagText.ToUpper()}</span>";
+        }
+
+        return new HtmlString(text);
+    }
+}
+@section Headers
+{
+    <link rel="stylesheet" href="~/css/compatibility.css" />
+}
+
+@if (!string.IsNullOrEmpty(Model.Patch) && Model.Data?.Any() != true)
+{
+    <div class="highlighted-section">
+        <h2>Patch Not Live Yet</h2>
+        <p>Patch @Model.Patch has not been released yet.</p>
+        <p>The list of broken mods and their status will be available once the patch has been released.</p>
+        <a class="button" href="/compatibility">View All Mods Instead <i class="fa-solid fa-chevron-right"></i></a>
+    </div>
+}
+
+@if (Model.ShowPatchProgress && Model.Data is not null)
+{
+    <div class="progress">
+        <div class="header">
+            <h4>Progress of mod updates</h4>
+            <h4>@((DateTime.UtcNow - Model.StartTime).ToReadableString(true)) since the patch</h4>
+        </div>
+        <div style="padding: 1rem">
+            <div class="progress-count">
+                <p>@Model.FixedMods mods patched</p>
+                <p>@(Model.TotalMods - Model.FixedMods) mods waiting for a fix</p>
+            </div>
+            <div class="bar">
+                @foreach (var group in Model.Data.AsEnumerable().Reverse())
+                {
+                    <div class="@(group.Key.ToString().ToLower()) tooltip" style="width: @((100f * group.Value.Count / Model.TotalMods).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture))%">
+                        <span class="tooltip-text">@group.Value.Count @(group.Key is NotificationType.Info ? "stable" : group.Key.ToString().FormatWords().ToLower()) mods</span>
+                    </div>
+                }
+            </div>
+            <small>Catalogue last updated @Model.LastUpdateTime.ToRelatedString(true, true, true).ToLower()</small>
+        </div>
+    </div>
+}
+
+@foreach (var group in Model.Data ?? [])
+{
+    if (group.Key < NotificationType.Caution && group.Value.Count > 20)
+        continue;
+
+    <div class="group group-@(group.Key.ToString().ToLower()) @(Model.IsMobile ? "mobile" : "")">
+        <div class="bar"></div>
+        <div class="header">
+            <h4>@(group.Key is NotificationType.Info ? "Stable" : group.Key.ToString().FormatWords())</h4>
+        </div>
+        <div class="mods">
+            @foreach (var mod in group.Value)
+            {
+                <div class="mod">
+                    <div class="image-name">
+                        <img src="@mod.ThumbnailUrl.IfEmpty("/assets/Thumb_Pdx.png")" />
+                        <div class="name-author">
+                            <span class="name">@(GetTitle(mod.Name.IfEmpty($"Unknown Mod #{mod.Id}")))</span>
+                            <span class="author"><i class="fa-regular fa-user"></i> @mod.AuthorId</span>
+                        </div>
+                    </div>
+                    <div class="note @string.IsNullOrEmpty(mod.Note).If("empty")">
+                        @mod.Note
+                    </div>
+                    <div class="meta">
+                        <span class="time">Reviewed @mod.ReviewDate.ToRelatedString(true, false, true).ToLower()</span>
+                        <div class="id">
+                            <span class="id"># @mod.Id</span>
+                            <div class="buttons">
+                                <a href="https://mods.paradoxplaza.com/mods/@mod.Id/Windows" target="_blank" class="button pdx"><img src="~/assets/pdxmods-small.png" /> View on PDX Mods</a>
+                                @if (!Model.IsMobile)
+                                {
+                                    <a href="/app/mods/@mod.Id" class="button skyve"><img src="~/assets/favicon.ico" /> View in Skyve</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <a href="https://mods.paradoxplaza.com/mods/@mod.Id/Windows" target="_blank" class="button pdx"><img src="~/assets/pdxmods-small.png" /> View on PDX Mods</a>
+                        @if (!Model.IsMobile)
+                        {
+                            <a href="/app/mods/@mod.Id" class="button skyve"><img src="~/assets/favicon.ico" /> View in Skyve</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
