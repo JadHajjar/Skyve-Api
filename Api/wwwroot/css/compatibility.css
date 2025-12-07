@@ -71,6 +71,7 @@
   margin-right: 0.75rem;
   border-radius: 0.25rem;
   object-fit: cover;
+  transition: filter ease-out 0.2s;
 }
 
 .mods .mod .image-name {
@@ -78,6 +79,20 @@
   align-items: center;
   margin: 0.25rem 0;
   flex: 5;
+  text-decoration: none;
+  color: #eaeef1 !important;
+}
+
+.mods .mod .image-name:hover {
+  color: #e7bd78 !important;
+}
+
+.mods .mod .image-name:hover .author {
+  color: #e7bc787f !important;
+}
+
+.mods .mod .image-name:hover img {
+  filter: brightness(1.25) contrast(0.8);
 }
 
 .mods .mod .note {
@@ -88,11 +103,10 @@
 }
 
 .mods .mod .meta {
-  flex: 3;
+  width: 15rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-width: 12rem;
   gap: 0.5rem;
   font-size: 1rem;
   margin: 0;
@@ -105,20 +119,19 @@
 }
 
 .mods .mod .meta div.id {
-  min-height: 1rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.25rem;
 }
 
-.mods .mod .meta span.id {
-  z-index: -1;
-  transition: opacity 0.2s 0.075s ease-out;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-}
-
-.mods .mod:hover .meta span.id {
+.mods .mod .buttons {
   opacity: 0;
+  transition: opacity ease-out 0.2s;
+}
+
+.mods .mod:hover .buttons {
+  opacity: 1;
 }
 
 .mods .mod .name-author {
@@ -149,30 +162,13 @@
   font-size: 0.8rem;
   margin: 0;
   color: #8d97a4;
+  transition: background-color ease-out 0.2s, color ease-out 0.2s, box-shadow ease-out 0.2s;
 }
 
 .mods .mod .author svg {
   width: 0.8rem;
   height: 0.8rem;
   margin: 0;
-}
-
-.mods .mod .buttons {
-  display: none;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  gap: 0.4rem;
-  opacity: 0;
-  transition: opacity 0.2s 0.075s ease-out;
-}
-
-.mods .mod .meta .buttons {
-  display: flex;
-}
-
-.mods .mod:hover .buttons {
-  opacity: 1;
 }
 
 .mods .mod a.button {
@@ -306,6 +302,25 @@ label.obsolete {
   }
 }
 
+@media (max-width: 900px) {
+  .mods .mod .name {
+    font-size: 1rem;
+  }
+
+  .mods .mod .author {
+    font-size: 0.7rem;
+  }
+
+  .mods .mod .note {
+    font-size: 0.85rem;
+  }
+
+  .mods .mod .meta {
+    width: 9rem;
+    font-size: 0.8rem;
+  }
+}
+
 @media (max-width: 550px) {
   .mods {
     font-size: 0.8rem;
@@ -344,14 +359,11 @@ label.obsolete {
 
   .mods .mod .meta {
     font-size: 0.75rem;
+    width: 100%;
   }
 
   .mods .mod .meta div.id {
     min-height: 1rem;
-  }
-
-  .mods .mod .meta span.id {
-    opacity: 1 !important;
   }
 
   .mods .mod .author {
@@ -364,22 +376,10 @@ label.obsolete {
   }
 
   .mods .mod .buttons {
-    display: flex;
-    opacity: 1;
-    width: 100%;
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
-  .mobile .mods .mod .buttons {
     position: absolute;
     top: auto;
-    right: 0.25rem;
-    bottom: 0.25rem;
-  }
-
-  .mods .mod .meta .buttons {
-    display: none;
+    right: 0;
+    bottom: 0;
   }
 
   .mods .mod .button {

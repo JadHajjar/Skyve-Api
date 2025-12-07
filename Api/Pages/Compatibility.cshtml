@@ -47,7 +47,7 @@
 }
 @section Headers
 {
-    <link rel="stylesheet" href="~/css/compatibility.css" />
+    <link rel="stylesheet" href="~/css/compatibility.css" asp-append-version="true" />
 }
 
 @if (!string.IsNullOrEmpty(Model.Patch) && Model.Data?.Any() != true)
@@ -65,7 +65,7 @@
     <div class="progress">
         <div class="header">
             <h4>Progress of mod updates</h4>
-            <h4>@((DateTime.UtcNow - Model.StartTime).ToReadableString(true)) since the patch</h4>
+            <h4>@((DateTime.UtcNow - Model.StartTime).ToReadableString(true)) since patch @Model.Patch</h4>
         </div>
         <div style="padding: 1rem">
             <div class="progress-count">
@@ -99,13 +99,13 @@
             @foreach (var mod in group.Value)
             {
                 <div class="mod">
-                    <div class="image-name">
+                    <a class="image-name" href="https://mods.paradoxplaza.com/mods/@mod.Id/Windows" target="_blank">
                         <img src="@mod.ThumbnailUrl.IfEmpty("/assets/Thumb_Pdx.png")" />
                         <div class="name-author">
                             <span class="name">@(GetTitle(mod.Name.IfEmpty($"Unknown Mod #{mod.Id}")))</span>
                             <span class="author"><i class="fa-regular fa-user"></i> @mod.AuthorId</span>
                         </div>
-                    </div>
+                    </a>
                     <div class="note @string.IsNullOrEmpty(mod.Note).If("empty")">
                         @mod.Note
                     </div>
@@ -113,21 +113,13 @@
                         <span class="time">Reviewed @mod.ReviewDate.ToRelatedString(true, false, true).ToLower()</span>
                         <div class="id">
                             <span class="id"># @mod.Id</span>
-                            <div class="buttons">
-                                <a href="https://mods.paradoxplaza.com/mods/@mod.Id/Windows" target="_blank" class="button pdx"><img src="~/assets/pdxmods-small.png" /> View on PDX Mods</a>
-                                @if (!Model.IsMobile)
-                                {
+                            @if (!Model.IsMobile)
+                            {
+                                <div class="buttons">
                                     <a href="/app/mods/@mod.Id" class="button skyve"><img src="~/assets/favicon.ico" /> View in Skyve</a>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
-                    </div>
-                    <div class="buttons">
-                        <a href="https://mods.paradoxplaza.com/mods/@mod.Id/Windows" target="_blank" class="button pdx"><img src="~/assets/pdxmods-small.png" /> View on PDX Mods</a>
-                        @if (!Model.IsMobile)
-                        {
-                            <a href="/app/mods/@mod.Id" class="button skyve"><img src="~/assets/favicon.ico" /> View in Skyve</a>
-                        }
                     </div>
                 </div>
             }

@@ -245,6 +245,7 @@ public class CS2ApiController : ControllerBase
 
 			SqlHelper.ExecuteNonQuery((SqlTransaction)transaction, CommandType.Text,
 				$"UPDATE [CS2_Packages] SET " +
+					$"[ReviewDate] = DATEADD(hour, DATEDIFF(hour, 0, DATEADD(minute, 30, SYSUTCDATETIME())), 0), " +
 					$"[Stability] = {bulkData.Stability}, " +
 					$"[ReviewedGameVersion] = '{bulkData.ReviewedGameVersion?.Replace("'", "''")}' " +
 				$"WHERE [Id] IN ({string.Join(',', bulkData.Packages)})");

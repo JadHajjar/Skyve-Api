@@ -69,7 +69,7 @@ public class CompatibilityModel : PageModel
 		//	}
 		//}
 
-		ShowPatchProgress = !string.IsNullOrEmpty(Patch) && packages.Count > 0 && !packages.Any(x => x.ReviewDate < DateTime.UtcNow.AddDays(-15));
+		ShowPatchProgress = !string.IsNullOrEmpty(Patch) && packages.Count > 0 && !packages.Any(x => x.ReviewDate < DateTime.UtcNow.AddDays(-10));
 
 		Data = packages
 			.Where(x => !string.IsNullOrEmpty(x.Name))

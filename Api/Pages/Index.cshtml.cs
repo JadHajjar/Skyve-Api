@@ -13,7 +13,7 @@ public class IndexModel : PageModel
 	{
 		LatestPatch = GetLatestPatch();
 		ShowPatch = (DateTime)SqlHelper.ExecuteScalar(SqlHandler.ConnectionString, System.Data.CommandType.Text, 
-			$"SELECT MIN([ReviewDate]) FROM [CS2_Packages] WHERE [ReviewedGameVersion] = '{LatestPatch}'") >= DateTime.UtcNow.AddDays(-15);
+			$"SELECT MIN([ReviewDate]) FROM [CS2_Packages] WHERE [ReviewedGameVersion] = '{LatestPatch}'") >= DateTime.UtcNow.AddDays(-10);
 	}
 
 	private static string? GetLatestPatch()
