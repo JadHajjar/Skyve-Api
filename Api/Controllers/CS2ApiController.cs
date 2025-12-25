@@ -278,7 +278,7 @@ public class CS2ApiController : ControllerBase
 		{
 			if (!TryGetUserId(out var userId)
 				|| string.IsNullOrEmpty(userId)
-				|| DynamicSql.SqlGetById(new UserData { Id = userId })?.Manager == true)
+				|| DynamicSql.SqlGetById(new UserData { Id = userId })?.LockedAccess == true)
 			{
 				return NoAuth();
 			}
@@ -311,6 +311,8 @@ public class CS2ApiController : ControllerBase
 		{
 			return [];
 		}
+
+		DynamicSql.SqlDelete<ReviewRequestNoLogData>("[Timestamp] < DATEADD(DAY, -14, GETUTCDATE())");
 
 		return DynamicSql.SqlGet<ReviewRequestNoLogData>();
 	}
