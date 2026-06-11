@@ -1,0 +1,44 @@
+﻿@page
+@model ObsoleteModel
+@{
+    ViewData["Title"] = "Update Instructions";
+    ViewData["Tab"] = "Obsolete";
+}
+@section Headers
+{
+    <link rel="stylesheet" href="~/css/obsolete.css" asp-append-version="true" />
+}
+
+<div class="highlighted-section">
+    <h2>Updating Skyve for patch 1.5.7f1</h2>
+    <p>Update 1.5.7f1 of the game brings changes to the folder structure of mods which means your Skyve @($"v{Model.v}") app will not be able to read them properly.</p>
+</div>
+
+<div class="update-section">
+    <p>You will need to update to <strong>Skyve v1.2</strong> to be able to use Skyve with the new patch.</p>
+    <div>
+        <h3>Automatic Update</h3>
+        <p>
+            If you are able to load your mods in-game, make sure Skyve is included in your <strong>active</strong> playset.
+            <br />
+            Then go to your Options, select the Skyve section, and click on the "Install Skyve" or "Update Skyve" button.
+        </p>
+    </div>
+
+    <div>
+        <h3>Manual Update</h3>
+        <p>
+            You can manually update Skyve by downloading it from the Paradox Mods page <a href="/home">here</a>.
+            <br />
+            This will download a zip file which you can extract anywhere, then run the <strong>Setup</strong> app that is included in it.
+        </p>
+    </div>
+</div>
+
+<div class="highlighted-section">
+    <h3>Discord</h3>
+    <p>
+        If you have any issues with the update, please join our Discord server and ask for help in the #skyve channel.
+    </p>
+    <a class="button" href="/discord">Join Discord Server <i class="fa-brands fa-discord"></i></a>
+</div>
